@@ -1,0 +1,1228 @@
+options:
+  parameters:
+    author: OpenAI Codex
+    catch_exceptions: 'True'
+    category: '[Educational Simulations]'
+    description: NOAA-20-inspired X-band QPSK image link with visible GNU Radio DSP and gr-leo channel blocks.
+    generate_options: qt_gui
+    id: xband_leo_image_link
+    output_language: python
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: run
+    sizing_mode: fixed
+    title: NOAA-20-Inspired X-Band Image Link
+    window_size: 1900,1100
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+blocks:
+- name: rate_scale
+  id: variable
+  parameters:
+    comment: 0.1 practical mode; 1.0 full NOAA-20-inspired rate
+    value: '0.1'
+  states:
+    coordinate: [24, 52]
+    rotation: 0
+    state: enabled
+- name: reference_information_rate
+  id: variable
+  parameters:
+    comment: Reference information rate in bit/s
+    value: 15e6
+  states:
+    coordinate: [152, 52]
+    rotation: 0
+    state: enabled
+- name: information_rate
+  id: variable
+  parameters:
+    comment: Scaled uncoded payload rate in bit/s
+    value: reference_information_rate * rate_scale
+  states:
+    coordinate: [344, 52]
+    rotation: 0
+    state: enabled
+- name: code_rate
+  id: variable
+  parameters:
+    value: '0.5'
+  states:
+    coordinate: [536, 52]
+    rotation: 0
+    state: enabled
+- name: coded_bit_rate
+  id: variable
+  parameters:
+    comment: Rate-1/2 encoder output in bit/s
+    value: information_rate / code_rate
+  states:
+    coordinate: [632, 52]
+    rotation: 0
+    state: enabled
+- name: bits_per_symbol
+  id: variable
+  parameters:
+    value: '2'
+  states:
+    coordinate: [800, 52]
+    rotation: 0
+    state: enabled
+- name: symbol_rate
+  id: variable
+  parameters:
+    comment: QPSK symbols per second
+    value: coded_bit_rate / bits_per_symbol
+  states:
+    coordinate: [936, 52]
+    rotation: 0
+    state: enabled
+- name: samples_per_symbol
+  id: variable
+  parameters:
+    value: '2'
+  states:
+    coordinate: [1096, 52]
+    rotation: 0
+    state: enabled
+- name: sample_rate
+  id: variable
+  parameters:
+    comment: Complex baseband samples per second
+    value: symbol_rate * samples_per_symbol
+  states:
+    coordinate: [1248, 52]
+    rotation: 0
+    state: enabled
+- name: rolloff
+  id: variable
+  parameters:
+    value: '0.35'
+  states:
+    coordinate: [1416, 52]
+    rotation: 0
+    state: enabled
+- name: occupied_bandwidth
+  id: variable
+  parameters:
+    comment: Raised-cosine null-to-null occupied bandwidth in Hz
+    value: symbol_rate * (1 + rolloff)
+  states:
+    coordinate: [1512, 52]
+    rotation: 0
+    state: enabled
+- name: carrier_frequency
+  id: variable
+  parameters:
+    comment: Nominal NOAA-20-inspired X-band carrier in Hz
+    value: 7.812e9
+  states:
+    coordinate: [1696, 52]
+    rotation: 0
+    state: enabled
+- name: frame_payload_bytes
+  id: variable
+  parameters:
+    value: '1024'
+  states:
+    coordinate: [24, 132]
+    rotation: 0
+    state: enabled
+- name: frame_bits
+  id: variable
+  parameters:
+    value: frame_payload_bytes * 8
+  states:
+    coordinate: [176, 132]
+    rotation: 0
+    state: enabled
+- name: payload_bytes
+  id: variable
+  parameters:
+    value: 256 * 256 * 3
+  states:
+    coordinate: [296, 132]
+    rotation: 0
+    state: enabled
+- name: payload_bits
+  id: variable
+  parameters:
+    value: payload_bytes * 8
+  states:
+    coordinate: [424, 132]
+    rotation: 0
+    state: enabled
+- name: training_frames
+  id: variable
+  parameters:
+    comment: Four terminated codewords precede the measured payload
+    value: '4'
+  states:
+    coordinate: [552, 132]
+    rotation: 0
+    state: enabled
+- name: training_bits
+  id: variable
+  parameters:
+    value: training_frames * frame_bits
+  states:
+    coordinate: [688, 132]
+    rotation: 0
+    state: enabled
+- name: tail_bits
+  id: variable
+  parameters:
+    value: training_bits
+  states:
+    coordinate: [816, 132]
+    rotation: 0
+    state: enabled
+- name: rrc_span_symbols
+  id: variable
+  parameters:
+    value: '11'
+  states:
+    coordinate: [920, 132]
+    rotation: 0
+    state: enabled
+- name: rrc_ntaps
+  id: variable
+  parameters:
+    comment: Odd tap count gives integer group delay
+    value: rrc_span_symbols * samples_per_symbol + 1
+  states:
+    coordinate: [1064, 132]
+    rotation: 0
+    state: enabled
+- name: rrc_taps
+  id: variable
+  parameters:
+    comment: Unit-energy scale is stabilized by the explicit amplitude and AGC blocks
+    value: firdes.root_raised_cosine(1.0, sample_rate, symbol_rate, rolloff, rrc_ntaps)
+  states:
+    coordinate: [1184, 132]
+    rotation: 0
+    state: enabled
+- name: tx_amplitude
+  id: variable
+  parameters:
+    comment: Profiles 2 and 3 use explicitly derived noise/link voltage scales
+    value: grleo_noise_rms * 10**(noise_test_snr_db / 20) if channel_profile == 2 else (full_link_voltage_scale if channel_profile == 3 else 1.0)
+  states:
+    coordinate: [1312, 132]
+    rotation: 0
+    state: enabled
+- name: satellite_tx_gain_db
+  id: variable
+  parameters:
+    value: '5.0'
+  states:
+    coordinate: [688, 212]
+    rotation: 0
+    state: enabled
+- name: ground_dish_diameter_m
+  id: variable
+  parameters:
+    value: '2.4'
+  states:
+    coordinate: [824, 212]
+    rotation: 0
+    state: enabled
+- name: ground_aperture_efficiency
+  id: variable
+  parameters:
+    value: '0.55'
+  states:
+    coordinate: [960, 212]
+    rotation: 0
+    state: enabled
+- name: satellite_tx_power_dbm
+  id: variable
+  parameters:
+    value: '30.0'
+  states:
+    coordinate: [24, 292]
+    rotation: 0
+    state: enabled
+- name: full_link_voltage_scale
+  id: variable
+  parameters:
+    comment: Applies TX power and antenna voltage gains; sqrt(1000) matches installed gr-leo noise units
+    value: 10**((satellite_tx_power_dbm - 30) / 20) * 10**(satellite_tx_gain_db / 20) * ground_aperture_efficiency**0.5 * 3.141592653589793 * ground_dish_diameter_m * carrier_frequency / 299792458.0 * 1000**0.5
+  states:
+    coordinate: [184, 292]
+    rotation: 0
+    state: enabled
+- name: ground_noise_figure_db
+  id: variable
+  parameters:
+    value: '1.0'
+  states:
+    coordinate: [24, 212]
+    rotation: 0
+    state: enabled
+- name: ground_noise_temperature_k
+  id: variable
+  parameters:
+    value: '290.0'
+  states:
+    coordinate: [176, 212]
+    rotation: 0
+    state: enabled
+- name: grleo_noise_rms
+  id: variable
+  parameters:
+    comment: RMS noise amplitude implemented by this gr-leo build for kTB and 1 ohm
+    value: (1000 * 1.38e-23 * ground_noise_temperature_k * occupied_bandwidth * 10**(ground_noise_figure_db / 10))**0.5
+  states:
+    coordinate: [352, 212]
+    rotation: 0
+    state: enabled
+- name: noise_test_snr_db
+  id: variable
+  parameters:
+    comment: Controlled receive SNR used only by channel profile 2
+    value: '30.0'
+  states:
+    coordinate: [536, 212]
+    rotation: 0
+    state: enabled
+- name: receiver_path
+  id: variable
+  parameters:
+    comment: 0 deterministic clean calibration; 1 FLL + Gardner + Costas synchronization
+    value: '1'
+  states:
+    coordinate: [1432, 132]
+    rotation: 0
+    state: enabled
+- name: clean_coded_bit_skip
+  id: variable
+  parameters:
+    comment: 'Calculated two-filter group delay: 2*((23-1)/2)/2 symbols * 2 coded bits'
+    value: 2 * ((rrc_ntaps - 1) // 2) // samples_per_symbol * bits_per_symbol
+  states:
+    coordinate: [1552, 132]
+    rotation: 0
+    state: enabled
+- name: sync_coded_bit_skip
+  id: variable
+  parameters:
+    comment: Measured as 64 coded bits using deterministic training-sequence correlation
+    value: '64'
+  states:
+    coordinate: [1744, 132]
+    rotation: 0
+    state: enabled
+- name: channel_fspl
+  id: variable
+  parameters:
+    comment: gr-leo enumeration 0=None, 5=enabled
+    value: 5 if channel_profile == 3 else 0
+  states:
+    coordinate: [1184, 212]
+    rotation: 0
+    state: enabled
+- name: channel_doppler
+  id: variable
+  parameters:
+    comment: gr-leo enumeration 0=None, 7=enabled
+    value: 7 if channel_profile >= 1 else 0
+  states:
+    coordinate: [1304, 212]
+    rotation: 0
+    state: enabled
+- name: channel_pointing
+  id: variable
+  parameters:
+    comment: gr-leo enumeration 0=None, 6=enabled
+    value: 6 if channel_profile == 3 else 0
+  states:
+    coordinate: [1440, 212]
+    rotation: 0
+    state: enabled
+- name: channel_atmosphere
+  id: variable
+  parameters:
+    comment: 0=None, 1=ITU, 2=regression
+    value: 1 if channel_profile == 3 else 0
+  states:
+    coordinate: [1576, 212]
+    rotation: 0
+    state: enabled
+- name: channel_rain
+  id: variable
+  parameters:
+    comment: 0=None, 3=ITU map, 4=local rainfall rate
+    value: 4 if channel_profile == 3 else 0
+  states:
+    coordinate: [1712, 212]
+    rotation: 0
+    state: enabled
+- name: channel_noise
+  id: variable
+  parameters:
+    comment: 0=None, 1=white Gaussian noise from gr-leo link parameters
+    value: 1 if channel_profile >= 2 else 0
+  states:
+    coordinate: [1824, 212]
+    rotation: 0
+    state: enabled
+- name: channel_profile
+  id: variable
+  parameters:
+    comment: '0 clean; 1 Doppler only; 2 Doppler and noise; 3 full representative channel'
+    value: '0'
+  states:
+    coordinate: [1056, 212]
+    rotation: 0
+    state: enabled
+- name: qpsk_constellation
+  id: variable_constellation
+  parameters:
+    const_points: '[-1-1j, -1+1j, 1+1j, 1-1j]'
+    dims: '1'
+    normalization: digital.constellation.POWER_NORMALIZATION
+    npwr: '1.0'
+    precision: '8'
+    rot_sym: '4'
+    soft_dec_lut: None
+    sym_map: '[0, 1, 3, 2]'
+    type: qpsk
+  states:
+    coordinate: [744, 292]
+    rotation: 0
+    state: enabled
+- name: cc_encoder
+  id: variable_cc_encoder_def
+  parameters:
+    dim1: '1'
+    dim2: '1'
+    framebits: frame_bits
+    k: '7'
+    mode: fec.CC_TERMINATED
+    ndim: '0'
+    padding: 'False'
+    polys: '[109, 79]'
+    rate: '2'
+    state_start: '0'
+  states:
+    coordinate: [456, 292]
+    rotation: 0
+    state: enabled
+- name: cc_decoder
+  id: variable_cc_decoder_def
+  parameters:
+    dim1: '1'
+    dim2: '1'
+    framebits: frame_bits
+    k: '7'
+    mode: fec.CC_TERMINATED
+    ndim: '0'
+    padding: 'False'
+    polys: '[109, 79]'
+    rate: '2'
+    state_end: '0'
+    state_start: '0'
+    value: '"ok"'
+  states:
+    coordinate: [968, 292]
+    rotation: 0
+    state: enabled
+- name: satellite_tx_antenna
+  id: variable_antenna
+  parameters:
+    aperture_efficiency: '55'
+    beamwidth: '60'
+    boom_length: '0'
+    circumference: '0'
+    diameter: '0'
+    frequency: carrier_frequency
+    gain: satellite_tx_gain_db
+    lp: '0.5'
+    pointing_error: '0'
+    polarization: '0'
+    rolloff_gain: '0'
+    turn_spacing: '0'
+    turns: '0'
+    type: '3'
+    value: '"ok"'
+  states:
+    coordinate: [1120, 292]
+    rotation: 0
+    state: enabled
+- name: satellite_rx_antenna
+  id: variable_antenna
+  parameters:
+    aperture_efficiency: '55'
+    beamwidth: '360'
+    boom_length: '0'
+    circumference: '0'
+    diameter: '0'
+    frequency: carrier_frequency
+    gain: '0'
+    lp: '0.5'
+    pointing_error: '0'
+    polarization: '0'
+    rolloff_gain: '0'
+    turn_spacing: '0'
+    turns: '0'
+    type: '3'
+    value: '"ok"'
+  states:
+    coordinate: [1288, 292]
+    rotation: 0
+    state: enabled
+- name: ground_tx_antenna
+  id: variable_antenna
+  parameters:
+    aperture_efficiency: '55'
+    beamwidth: '360'
+    boom_length: '0'
+    circumference: '0'
+    diameter: '0'
+    frequency: carrier_frequency
+    gain: '0'
+    lp: '0.5'
+    pointing_error: '0'
+    polarization: '0'
+    rolloff_gain: '0'
+    turn_spacing: '0'
+    turns: '0'
+    type: '3'
+    value: '"ok"'
+  states:
+    coordinate: [1456, 292]
+    rotation: 0
+    state: enabled
+- name: ground_rx_antenna
+  id: variable_antenna
+  parameters:
+    aperture_efficiency: ground_aperture_efficiency * 100
+    beamwidth: '0'
+    boom_length: '0'
+    circumference: '0'
+    diameter: ground_dish_diameter_m
+    frequency: carrier_frequency
+    gain: '0'
+    lp: '0.5'
+    pointing_error: '0'
+    polarization: '0'
+    rolloff_gain: '0'
+    turn_spacing: '0'
+    turns: '0'
+    type: '2'
+    value: '"ok"'
+  states:
+    coordinate: [1624, 292]
+    rotation: 0
+    state: enabled
+- name: noaa20_satellite
+  id: variable_satellite
+  parameters:
+    comm_freq_rx: carrier_frequency
+    comm_freq_tx: carrier_frequency
+    noise_figure: '12'
+    noise_temp: '290'
+    rx_antenna: satellite_rx_antenna
+    rx_bw: occupied_bandwidth
+    tle_1: 1 43013U 17073A   26198.87431143  .00000023  00000-0  32041-4 0  9995
+    tle_2: 2 43013  98.7772 138.0652 0001490 121.5711 238.5610 14.19516763448824
+    tle_title: NOAA 20 / JPSS-1
+    tx_antenna: satellite_tx_antenna
+    tx_power_dbm: satellite_tx_power_dbm
+    value: '"ok"'
+  states:
+    coordinate: [1168, 404]
+    rotation: 0
+    state: enabled
+- name: zawiya_tracker
+  id: variable_tracker
+  parameters:
+    comm_freq_rx: carrier_frequency
+    comm_freq_tx: carrier_frequency
+    gs_alt: '0.020'
+    gs_lat: '32.75'
+    gs_lon: '12.73'
+    noise_figure: ground_noise_figure_db
+    noise_temp: ground_noise_temperature_k
+    obs_end: '2026-07-18T01:03:27.507552Z'
+    obs_start: '2026-07-18T01:03:17.507552Z'
+    rx_antenna: ground_rx_antenna
+    rx_bw: occupied_bandwidth
+    satellite_info: noaa20_satellite
+    time_resolution_us: '1000'
+    tx_antenna: ground_tx_antenna
+    tx_power_dbm: '37'
+    value: '"ok"'
+  states:
+    coordinate: [1400, 404]
+    rotation: 0
+    state: enabled
+- name: leo_model
+  id: variable_leo_model_def
+  parameters:
+    atmo_gases_attenuation: channel_atmosphere
+    doppler_shift_enum: channel_doppler
+    enable_link_margin: 'True'
+    fspl_attenuation_enum: channel_fspl
+    mode: '1'
+    pointing_attenuation_enum: channel_pointing
+    precipitation_attenuation: channel_rain
+    rainfall_rate: '25'
+    surface_watervap_density: '7.5'
+    temperature: '20'
+    tracker: zawiya_tracker
+    value: '"ok"'
+  states:
+    coordinate: [1648, 404]
+    rotation: 0
+    state: enabled
+- name: note_source
+  id: note
+  parameters:
+    note: IMAGE SOURCE / MILESTONE A RAW STREAM
+  states:
+    coordinate: [24, 404]
+    rotation: 0
+    state: enabled
+- name: note_tx
+  id: note
+  parameters:
+    note: TRANSMITTER — MSB-first, terminated K=7 rate-1/2 code, Gray QPSK, RRC
+  states:
+    coordinate: [360, 404]
+    rotation: 0
+    state: enabled
+- name: note_channel
+  id: note
+  parameters:
+    note: LEO X-BAND CHANNEL — representative academic link assumptions
+  states:
+    coordinate: [1120, 484]
+    rotation: 0
+    state: enabled
+- name: note_rx
+  id: note
+  parameters:
+    note: RECEIVER — clean calibration path (0) or synchronized path (1)
+  states:
+    coordinate: [24, 820]
+    rotation: 0
+    state: enabled
+- name: file_source
+  id: blocks_file_source
+  parameters:
+    begin_tag: pmt.PMT_NIL
+    file: working/tx_image.rgb
+    length: '0'
+    offset: '0'
+    repeat: 'False'
+    type: byte
+    vlen: '1'
+  states:
+    coordinate: [24, 468]
+    rotation: 0
+    state: enabled
+- name: payload_unpack
+  id: blocks_repack_bits_bb
+  parameters:
+    align_output: 'False'
+    endianness: gr.GR_MSB_FIRST
+    k: '8'
+    l: '1'
+    len_tag_key: '""'
+  states:
+    coordinate: [176, 468]
+    rotation: 0
+    state: enabled
+- name: tx_bits_sink
+  id: blocks_file_sink
+  parameters:
+    append: 'False'
+    file: working/tx_bits.bin
+    type: byte
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    coordinate: [176, 548]
+    rotation: 0
+    state: enabled
+- name: training_source
+  id: blocks_vector_source_x
+  parameters:
+    repeat: 'False'
+    tags: '[]'
+    type: byte
+    vector: (0, 1, 1, 0, 1, 0, 0, 1) * (training_bits // 8)
+    vlen: '1'
+  states:
+    coordinate: [24, 612]
+    rotation: 0
+    state: enabled
+- name: tail_source
+  id: blocks_vector_source_x
+  parameters:
+    repeat: 'False'
+    tags: '[]'
+    type: byte
+    vector: (1, 0, 0, 1, 0, 1, 1, 0) * (tail_bits // 8)
+    vlen: '1'
+  states:
+    coordinate: [24, 692]
+    rotation: 0
+    state: enabled
+- name: training_payload_tail_mux
+  id: blocks_stream_mux
+  parameters:
+    lengths: (training_bits, payload_bits, tail_bits)
+    num_inputs: '3'
+    type: byte
+    vlen: '1'
+  states:
+    coordinate: [344, 548]
+    rotation: 0
+    state: enabled
+- name: fec_encoder
+  id: fec_extended_encoder
+  parameters:
+    encoder_list: cc_encoder
+    puncpat: '"11"'
+    threadtype: none
+  states:
+    coordinate: [504, 548]
+    rotation: 0
+    state: enabled
+- name: coded_bits_to_symbols
+  id: blocks_repack_bits_bb
+  parameters:
+    align_output: 'False'
+    endianness: gr.GR_MSB_FIRST
+    k: '1'
+    l: '2'
+    len_tag_key: '""'
+  states:
+    coordinate: [648, 548]
+    rotation: 0
+    state: enabled
+- name: differential_encoder
+  id: digital_diff_encoder_bb
+  parameters:
+    coding: digital.DIFF_DIFFERENTIAL
+    modulus: '4'
+  states:
+    coordinate: [792, 548]
+    rotation: 0
+    state: enabled
+- name: qpsk_mapper
+  id: digital_constellation_encoder_bc
+  parameters:
+    constellation: qpsk_constellation
+  states:
+    coordinate: [928, 548]
+    rotation: 0
+    state: enabled
+- name: tx_rrc
+  id: interp_fir_filter_xxx
+  parameters:
+    interp: samples_per_symbol
+    samp_delay: '0'
+    taps: rrc_taps
+    type: ccf
+  states:
+    coordinate: [1064, 548]
+    rotation: 0
+    state: enabled
+- name: amplitude_normalization
+  id: blocks_multiply_const_vxx
+  parameters:
+    const: tx_amplitude / 2.0
+    type: complex
+    vlen: '1'
+  states:
+    coordinate: [1208, 548]
+    rotation: 0
+    state: enabled
+- name: simulation_throttle
+  id: blocks_throttle
+  parameters:
+    ignoretag: 'True'
+    samples_per_second: sample_rate
+    type: complex
+    vlen: '1'
+  states:
+    coordinate: [1352, 548]
+    rotation: 0
+    state: enabled
+- name: leo_channel
+  id: leo_channel_model
+  parameters:
+    filename: results/channel_log.csv
+    model: leo_model
+    noise_type: channel_noise
+    sample_rate: sample_rate
+    store_csv: '1'
+  states:
+    coordinate: [1504, 548]
+    rotation: 0
+    state: enabled
+- name: receiver_agc
+  id: analog_agc_xx
+  parameters:
+    gain: '1.0'
+    max_gain: 1e12
+    rate: 1e-4
+    reference: '1.0'
+    type: complex
+  states:
+    coordinate: [1656, 548]
+    rotation: 0
+    state: enabled
+- name: clean_matched_rrc
+  id: fir_filter_xxx
+  parameters:
+    decim: samples_per_symbol
+    samp_delay: '0'
+    taps: rrc_taps
+    type: ccf
+  states:
+    coordinate: [24, 884]
+    rotation: 0
+    state: enabled
+- name: clean_qpsk_decoder
+  id: digital_constellation_decoder_cb
+  parameters:
+    constellation: qpsk_constellation
+  states:
+    coordinate: [176, 884]
+    rotation: 0
+    state: enabled
+- name: clean_differential_decoder
+  id: digital_diff_decoder_bb
+  parameters:
+    coding: digital.DIFF_DIFFERENTIAL
+    modulus: '4'
+  states:
+    coordinate: [456, 884]
+    rotation: 0
+    state: enabled
+- name: clean_symbols_to_bits
+  id: blocks_repack_bits_bb
+  parameters:
+    align_output: 'False'
+    endianness: gr.GR_MSB_FIRST
+    k: '2'
+    l: '1'
+    len_tag_key: '""'
+  states:
+    coordinate: [608, 884]
+    rotation: 0
+    state: enabled
+- name: clean_delay_correction
+  id: blocks_skiphead
+  parameters:
+    num_items: clean_coded_bit_skip
+    type: byte
+    vlen: '1'
+  states:
+    coordinate: [752, 884]
+    rotation: 0
+    state: enabled
+- name: sync_matched_rrc
+  id: fir_filter_xxx
+  parameters:
+    decim: '1'
+    samp_delay: '0'
+    taps: rrc_taps
+    type: ccf
+  states:
+    coordinate: [24, 980]
+    rotation: 0
+    state: enabled
+- name: coarse_fll
+  id: digital_fll_band_edge_cc
+  parameters:
+    filter_size: '45'
+    rolloff: rolloff
+    samps_per_sym: samples_per_symbol
+    type: cc
+    w: '0.02'
+  states:
+    coordinate: [176, 980]
+    rotation: 0
+    state: enabled
+- name: gardner_symbol_sync
+  id: digital_symbol_sync_xx
+  parameters:
+    constellation: qpsk_constellation
+    damping: '1.0'
+    loop_bw: '0.01'
+    max_dev: '0.5'
+    nfilters: '128'
+    osps: '1'
+    pfb_mf_taps: '[]'
+    resamp_type: digital.IR_MMSE_8TAP
+    sps: samples_per_symbol
+    ted_gain: '1.0'
+    ted_type: digital.TED_GARDNER
+    type: cc
+  states:
+    coordinate: [320, 980]
+    rotation: 0
+    state: enabled
+- name: sync_costas
+  id: digital_costas_loop_cc
+  parameters:
+    order: '4'
+    use_snr: 'False'
+    w: '0.01'
+  states:
+    coordinate: [488, 980]
+    rotation: 0
+    state: enabled
+- name: sync_qpsk_decoder
+  id: digital_constellation_decoder_cb
+  parameters:
+    constellation: qpsk_constellation
+  states:
+    coordinate: [616, 980]
+    rotation: 0
+    state: enabled
+- name: sync_differential_decoder
+  id: digital_diff_decoder_bb
+  parameters:
+    coding: digital.DIFF_DIFFERENTIAL
+    modulus: '4'
+  states:
+    coordinate: [760, 980]
+    rotation: 0
+    state: enabled
+- name: sync_symbols_to_bits
+  id: blocks_repack_bits_bb
+  parameters:
+    align_output: 'False'
+    endianness: gr.GR_MSB_FIRST
+    k: '2'
+    l: '1'
+    len_tag_key: '""'
+  states:
+    coordinate: [912, 980]
+    rotation: 0
+    state: enabled
+- name: sync_delay_correction
+  id: blocks_skiphead
+  parameters:
+    num_items: sync_coded_bit_skip
+    type: byte
+    vlen: '1'
+  states:
+    coordinate: [1056, 980]
+    rotation: 0
+    state: enabled
+- name: receiver_path_selector
+  id: blocks_selector
+  parameters:
+    enabled: 'True'
+    input_index: receiver_path
+    num_inputs: '2'
+    num_outputs: '1'
+    output_index: '0'
+    showports: 'False'
+    type: byte
+    vlen: '1'
+  states:
+    coordinate: [1200, 900]
+    rotation: 0
+    state: enabled
+- name: hard_bits_to_soft_sign
+  id: digital_map_bb
+  parameters:
+    map: '[-1, 1]'
+  states:
+    coordinate: [1328, 900]
+    rotation: 0
+    state: enabled
+- name: soft_char_to_float
+  id: blocks_char_to_float
+  parameters:
+    scale: '1'
+    vlen: '1'
+  states:
+    coordinate: [1456, 900]
+    rotation: 0
+    state: enabled
+- name: viterbi_decoder
+  id: fec_extended_decoder
+  parameters:
+    ann: None
+    decoder_list: cc_decoder
+    puncpat: '"11"'
+    threadtype: none
+    value: fec_extended_decoder
+  states:
+    coordinate: [1584, 900]
+    rotation: 0
+    state: enabled
+- name: remove_training
+  id: blocks_skiphead
+  parameters:
+    num_items: training_bits
+    type: byte
+    vlen: '1'
+  states:
+    coordinate: [1728, 900]
+    rotation: 0
+    state: enabled
+- name: payload_bit_head
+  id: blocks_head
+  parameters:
+    num_items: payload_bits
+    type: byte
+    vlen: '1'
+  states:
+    coordinate: [1848, 900]
+    rotation: 0
+    state: enabled
+- name: rx_bits_sink
+  id: blocks_file_sink
+  parameters:
+    append: 'False'
+    file: working/rx_bits.bin
+    type: byte
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    coordinate: [2000, 852]
+    rotation: 0
+    state: enabled
+- name: received_bits_to_bytes
+  id: blocks_repack_bits_bb
+  parameters:
+    align_output: 'False'
+    endianness: gr.GR_MSB_FIRST
+    k: '1'
+    l: '8'
+    len_tag_key: '""'
+  states:
+    coordinate: [2000, 948]
+    rotation: 0
+    state: enabled
+- name: rx_image_sink
+  id: blocks_file_sink
+  parameters:
+    append: 'False'
+    file: working/rx_image.rgb
+    type: byte
+    unbuffered: 'False'
+    vlen: '1'
+  states:
+    coordinate: [2152, 948]
+    rotation: 0
+    state: enabled
+- name: tx_constellation_display
+  id: qtgui_const_sink_x
+  parameters:
+    autoscale: 'False'
+    color1: '"blue"'
+    grid: 'True'
+    gui_hint: 0,0,1,1
+    label1: Transmitted symbols
+    marker1: '0'
+    name: '"Transmitted QPSK Constellation"'
+    nconnections: '1'
+    size: '1024'
+    style1: '0'
+    type: complex
+    update_time: '0.1'
+    width1: '1'
+    xmax: '1.5'
+    xmin: '-1.5'
+    ymax: '1.5'
+    ymin: '-1.5'
+  states:
+    coordinate: [2320, 404]
+    rotation: 0
+    state: enabled
+- name: rx_presync_constellation_display
+  id: qtgui_const_sink_x
+  parameters:
+    autoscale: 'True'
+    color1: '"red"'
+    grid: 'True'
+    gui_hint: 0,1,1,1
+    label1: Before synchronization
+    marker1: '0'
+    name: '"Received Constellation Before Synchronization"'
+    nconnections: '1'
+    size: '2048'
+    style1: '0'
+    type: complex
+    update_time: '0.1'
+    width1: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    coordinate: [2320, 500]
+    rotation: 0
+    state: enabled
+- name: rx_recovered_constellation_display
+  id: qtgui_const_sink_x
+  parameters:
+    autoscale: 'True'
+    color1: '"green"'
+    grid: 'True'
+    gui_hint: 0,2,1,1
+    label1: Synchronized symbols
+    marker1: '0'
+    name: '"Recovered QPSK Constellation"'
+    nconnections: '1'
+    size: '1024'
+    style1: '0'
+    type: complex
+    update_time: '0.1'
+    width1: '1'
+    xmax: '2'
+    xmin: '-2'
+    ymax: '2'
+    ymin: '-2'
+  states:
+    coordinate: [2320, 596]
+    rotation: 0
+    state: enabled
+- name: tx_spectrum_display
+  id: qtgui_freq_sink_x
+  parameters:
+    autoscale: 'True'
+    average: '0.1'
+    bw: sample_rate
+    color1: '"blue"'
+    fc: '0'
+    fftsize: '2048'
+    grid: 'True'
+    gui_hint: 1,0,1,1
+    label1: Before LEO channel
+    name: '"Spectrum Before LEO Channel"'
+    nconnections: '1'
+    norm_window: 'False'
+    showports: 'False'
+    type: complex
+    update_time: '0.1'
+    width1: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-120'
+  states:
+    coordinate: [2496, 404]
+    rotation: 0
+    state: enabled
+- name: rx_spectrum_display
+  id: qtgui_freq_sink_x
+  parameters:
+    autoscale: 'True'
+    average: '0.1'
+    bw: sample_rate
+    color1: '"red"'
+    fc: '0'
+    fftsize: '2048'
+    grid: 'True'
+    gui_hint: 1,1,1,1
+    label1: After LEO channel
+    name: '"Spectrum After LEO Channel"'
+    nconnections: '1'
+    norm_window: 'False'
+    showports: 'False'
+    type: complex
+    update_time: '0.1'
+    width1: '1'
+    wintype: window.WIN_BLACKMAN_hARRIS
+    ymax: '10'
+    ymin: '-160'
+  states:
+    coordinate: [2496, 500]
+    rotation: 0
+    state: enabled
+- name: received_power
+  id: blocks_complex_to_mag_squared
+  parameters:
+    vlen: '1'
+  states:
+    coordinate: [2496, 596]
+    rotation: 0
+    state: enabled
+- name: power_time_display
+  id: qtgui_time_sink_x
+  parameters:
+    autoscale: 'True'
+    color1: blue
+    grid: 'True'
+    gui_hint: 1,2,1,1
+    label1: Received magnitude squared
+    name: '"Received Baseband Power"'
+    nconnections: '1'
+    size: '2048'
+    srate: sample_rate
+    type: float
+    update_time: '0.1'
+    ylabel: Power
+    ymax: '2'
+    ymin: '0'
+    yunit: relative
+  states:
+    coordinate: [2672, 596]
+    rotation: 0
+    state: enabled
+
+connections:
+- [file_source, '0', payload_unpack, '0']
+- [payload_unpack, '0', tx_bits_sink, '0']
+- [training_source, '0', training_payload_tail_mux, '0']
+- [payload_unpack, '0', training_payload_tail_mux, '1']
+- [tail_source, '0', training_payload_tail_mux, '2']
+- [training_payload_tail_mux, '0', fec_encoder, '0']
+- [fec_encoder, '0', coded_bits_to_symbols, '0']
+- [coded_bits_to_symbols, '0', differential_encoder, '0']
+- [differential_encoder, '0', qpsk_mapper, '0']
+- [qpsk_mapper, '0', tx_rrc, '0']
+- [tx_rrc, '0', amplitude_normalization, '0']
+- [amplitude_normalization, '0', simulation_throttle, '0']
+- [simulation_throttle, '0', leo_channel, '0']
+- [leo_channel, '0', receiver_agc, '0']
+- [receiver_agc, '0', clean_matched_rrc, '0']
+- [clean_matched_rrc, '0', clean_qpsk_decoder, '0']
+- [clean_qpsk_decoder, '0', clean_differential_decoder, '0']
+- [clean_differential_decoder, '0', clean_symbols_to_bits, '0']
+- [clean_symbols_to_bits, '0', clean_delay_correction, '0']
+- [clean_delay_correction, '0', receiver_path_selector, '0']
+- [receiver_agc, '0', sync_matched_rrc, '0']
+- [sync_matched_rrc, '0', coarse_fll, '0']
+- [coarse_fll, '0', gardner_symbol_sync, '0']
+- [gardner_symbol_sync, '0', sync_costas, '0']
+- [sync_costas, '0', sync_qpsk_decoder, '0']
+- [sync_qpsk_decoder, '0', sync_differential_decoder, '0']
+- [sync_differential_decoder, '0', sync_symbols_to_bits, '0']
+- [sync_symbols_to_bits, '0', sync_delay_correction, '0']
+- [sync_delay_correction, '0', receiver_path_selector, '1']
+- [receiver_path_selector, '0', hard_bits_to_soft_sign, '0']
+- [hard_bits_to_soft_sign, '0', soft_char_to_float, '0']
+- [soft_char_to_float, '0', viterbi_decoder, '0']
+- [viterbi_decoder, '0', remove_training, '0']
+- [remove_training, '0', payload_bit_head, '0']
+- [payload_bit_head, '0', rx_bits_sink, '0']
+- [payload_bit_head, '0', received_bits_to_bytes, '0']
+- [received_bits_to_bytes, '0', rx_image_sink, '0']
+- [qpsk_mapper, '0', tx_constellation_display, '0']
+- [sync_matched_rrc, '0', rx_presync_constellation_display, '0']
+- [sync_costas, '0', rx_recovered_constellation_display, '0']
+- [simulation_throttle, '0', tx_spectrum_display, '0']
+- [leo_channel, '0', rx_spectrum_display, '0']
+- [leo_channel, '0', received_power, '0']
+- [received_power, '0', power_time_display, '0']
+
+metadata:
+  file_format: 1
+  grc_version: 3.10.12.0
