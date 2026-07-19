@@ -22,183 +22,185 @@ blocks:
 - name: note_system
   id: note
   parameters:
-    note: SYSTEM PARAMETERS — edit rate_scale to select 0.1 practical or 1.0 full-rate operation
+    note: |-
+      SYSTEM PARAMETERS — QUICK EDIT
+      1. Match image dimensions to simulation_config.json  2. Select rate_scale  3. Select channel_profile  4. Run prepare_image.py  5. Generate and run
   states: {coordinate: [24, 20], rotation: 0, state: enabled}
 - name: rate_scale
   id: variable
   parameters: {comment: '0.1 practical; 1.0 full NOAA-20-inspired rate', value: '0.1'}
-  states: {coordinate: [24, 60], rotation: 0, state: enabled}
+  states: {coordinate: [24, 90], rotation: 0, state: enabled}
 - name: reference_information_rate
   id: variable
   parameters: {comment: 'Reference information rate, bit/s', value: 15e6}
-  states: {coordinate: [152, 60], rotation: 0, state: enabled}
+  states: {coordinate: [160, 90], rotation: 0, state: enabled}
 - name: carrier_frequency
   id: variable
   parameters: {comment: 'Nominal X-band carrier, Hz', value: 7.812e9}
-  states: {coordinate: [344, 60], rotation: 0, state: enabled}
+  states: {coordinate: [352, 90], rotation: 0, state: enabled}
 - name: samples_per_symbol
   id: variable
   parameters: {comment: 'Complex samples per QPSK symbol', value: '2'}
-  states: {coordinate: [496, 60], rotation: 0, state: enabled}
+  states: {coordinate: [520, 90], rotation: 0, state: enabled}
 - name: rolloff
   id: variable
   parameters: {comment: 'RRC excess bandwidth', value: '0.35'}
-  states: {coordinate: [640, 60], rotation: 0, state: enabled}
+  states: {coordinate: [664, 90], rotation: 0, state: enabled}
 - name: channel_profile
   id: variable
   parameters: {comment: '0 clean; 1 Doppler; 2 Doppler+noise; 3 representative full channel', value: '0'}
-  states: {coordinate: [744, 60], rotation: 0, state: enabled}
+  states: {coordinate: [776, 90], rotation: 0, state: enabled}
 - name: frame_payload_bytes
   id: variable
   parameters: {comment: 'Terminated convolutional-code input frame size', value: '1024'}
-  states: {coordinate: [888, 60], rotation: 0, state: enabled}
+  states: {coordinate: [400, 160], rotation: 0, state: enabled}
 - name: payload_bits
   id: variable
   parameters: {comment: 'Set by width * height * RGB channels * 8', value: image_width * image_height * image_channels * 8}
-  states: {coordinate: [1048, 60], rotation: 0, state: enabled}
+  states: {coordinate: [688, 160], rotation: 0, state: enabled}
 - name: training_frames
   id: variable
   parameters: {comment: 'Deterministic acquisition frames prepared outside GNU Radio', value: '4'}
-  states: {coordinate: [1176, 60], rotation: 0, state: enabled}
+  states: {coordinate: [552, 160], rotation: 0, state: enabled}
 - name: noise_test_snr_db
   id: variable
   parameters: {comment: 'Controlled profile-2 receive SNR, dB', value: '30.0'}
-  states: {coordinate: [1312, 60], rotation: 0, state: enabled}
+  states: {coordinate: [920, 90], rotation: 0, state: enabled}
 - name: ground_dish_diameter_m
   id: variable
   parameters: {comment: 'Representative academic ground dish diameter, m', value: '2.4'}
-  states: {coordinate: [1464, 60], rotation: 0, state: enabled}
+  states: {coordinate: [1072, 90], rotation: 0, state: enabled}
 - name: ground_noise_figure_db
   id: variable
   parameters: {comment: 'Representative academic receiver noise figure, dB', value: '1.0'}
-  states: {coordinate: [1624, 60], rotation: 0, state: enabled}
+  states: {coordinate: [1232, 90], rotation: 0, state: enabled}
 
 - name: image_width
   id: variable
   parameters: {comment: 'Must match simulation_config.json', value: '256'}
-  states: {coordinate: [24, 140], rotation: 0, state: enabled}
+  states: {coordinate: [24, 160], rotation: 0, state: enabled}
 - name: image_height
   id: variable
   parameters: {comment: 'Must match simulation_config.json', value: '256'}
-  states: {coordinate: [144, 140], rotation: 0, state: enabled}
+  states: {coordinate: [144, 160], rotation: 0, state: enabled}
 - name: image_channels
   id: variable
   parameters: {comment: 'RGB8 channels', value: '3'}
-  states: {coordinate: [264, 140], rotation: 0, state: enabled}
+  states: {coordinate: [264, 160], rotation: 0, state: enabled}
 - name: information_rate
   id: variable
   parameters: {comment: 'Information rate, bit/s', value: reference_information_rate * rate_scale}
-  states: {coordinate: [384, 140], rotation: 0, state: enabled}
+  states: {coordinate: [24, 240], rotation: 0, state: enabled}
 - name: code_rate
   id: variable
   parameters: {value: '0.5'}
-  states: {coordinate: [528, 140], rotation: 0, state: enabled}
+  states: {coordinate: [168, 240], rotation: 0, state: enabled}
 - name: coded_bit_rate
   id: variable
   parameters: {comment: 'Convolutionally encoded rate, bit/s', value: information_rate / code_rate}
-  states: {coordinate: [624, 140], rotation: 0, state: enabled}
+  states: {coordinate: [304, 240], rotation: 0, state: enabled}
 - name: bits_per_symbol
   id: variable
   parameters: {value: '2'}
-  states: {coordinate: [768, 140], rotation: 0, state: enabled}
+  states: {coordinate: [448, 240], rotation: 0, state: enabled}
 - name: symbol_rate
   id: variable
   parameters: {comment: 'QPSK symbol rate, symbol/s', value: coded_bit_rate / bits_per_symbol}
-  states: {coordinate: [888, 140], rotation: 0, state: enabled}
+  states: {coordinate: [560, 240], rotation: 0, state: enabled}
 - name: sample_rate
   id: variable
   parameters: {comment: 'Complex baseband sample rate, sample/s', value: symbol_rate * samples_per_symbol}
-  states: {coordinate: [1024, 140], rotation: 0, state: enabled}
+  states: {coordinate: [704, 240], rotation: 0, state: enabled}
 - name: occupied_bandwidth
   id: variable
   parameters: {comment: 'Raised-cosine null-to-null bandwidth, Hz', value: symbol_rate * (1 + rolloff)}
-  states: {coordinate: [1160, 140], rotation: 0, state: enabled}
+  states: {coordinate: [848, 240], rotation: 0, state: enabled}
 - name: frame_bits
   id: variable
   parameters: {value: frame_payload_bytes * 8}
-  states: {coordinate: [1312, 140], rotation: 0, state: enabled}
+  states: {coordinate: [1016, 240], rotation: 0, state: enabled}
 - name: training_bits
   id: variable
   parameters: {value: training_frames * frame_bits}
-  states: {coordinate: [1424, 140], rotation: 0, state: enabled}
+  states: {coordinate: [1144, 240], rotation: 0, state: enabled}
 - name: tail_bits
   id: variable
   parameters: {value: training_bits}
-  states: {coordinate: [1552, 140], rotation: 0, state: enabled}
+  states: {coordinate: [1272, 240], rotation: 0, state: enabled}
 - name: framed_bits
   id: variable
   parameters: {value: training_bits + payload_bits + tail_bits}
-  states: {coordinate: [1656, 140], rotation: 0, state: enabled}
+  states: {coordinate: [1384, 240], rotation: 0, state: enabled}
 
 - name: rrc_span_symbols
   id: variable
   parameters: {value: '11'}
-  states: {coordinate: [24, 220], rotation: 0, state: enabled}
+  states: {coordinate: [1528, 240], rotation: 0, state: enabled}
 - name: rrc_ntaps
   id: variable
   parameters: {comment: 'Odd tap count gives an integer matched-filter group delay', value: rrc_span_symbols * samples_per_symbol + 1}
-  states: {coordinate: [152, 220], rotation: 0, state: enabled}
+  states: {coordinate: [1656, 240], rotation: 0, state: enabled}
 - name: rrc_taps
   id: variable
   parameters: {comment: 'Receiver RRC matched-filter taps', value: 'firdes.root_raised_cosine(1.0, sample_rate, symbol_rate, rolloff, rrc_ntaps)'}
-  states: {coordinate: [280, 220], rotation: 0, state: enabled}
+  states: {coordinate: [1784, 240], rotation: 0, state: enabled}
 - name: sync_coded_bit_skip
   id: variable
   parameters: {comment: 'Measured deterministic synchronizer acquisition displacement in coded bits', value: '64'}
-  states: {coordinate: [408, 220], rotation: 0, state: enabled}
+  states: {coordinate: [1928, 240], rotation: 0, state: enabled}
 - name: satellite_tx_gain_db
   id: variable
   parameters: {value: '5.0'}
-  states: {coordinate: [568, 220], rotation: 0, state: enabled}
+  states: {coordinate: [820, 160], rotation: 0, state: enabled}
 - name: ground_aperture_efficiency
   id: variable
   parameters: {value: '0.55'}
-  states: {coordinate: [696, 220], rotation: 0, state: enabled}
+  states: {coordinate: [956, 160], rotation: 0, state: enabled}
 - name: satellite_tx_power_dbm
   id: variable
   parameters: {value: '30.0'}
-  states: {coordinate: [840, 220], rotation: 0, state: enabled}
+  states: {coordinate: [1100, 160], rotation: 0, state: enabled}
 - name: ground_noise_temperature_k
   id: variable
   parameters: {value: '290.0'}
-  states: {coordinate: [984, 220], rotation: 0, state: enabled}
+  states: {coordinate: [1250, 160], rotation: 0, state: enabled}
 - name: grleo_noise_rms
   id: variable
   parameters: {comment: 'RMS noise amplitude for this installed gr-leo kTB implementation', value: '(1000 * 1.38e-23 * ground_noise_temperature_k * occupied_bandwidth * 10**(ground_noise_figure_db / 10))**0.5'}
-  states: {coordinate: [1136, 220], rotation: 0, state: enabled}
+  states: {coordinate: [840, 320], rotation: 0, state: enabled}
 - name: full_link_voltage_scale
   id: variable
   parameters: {comment: 'TX power and antenna voltage gains; sqrt(1000) matches installed gr-leo noise units', value: '10**((satellite_tx_power_dbm - 30) / 20) * 10**(satellite_tx_gain_db / 20) * ground_aperture_efficiency**0.5 * 3.141592653589793 * ground_dish_diameter_m * carrier_frequency / 299792458.0 * 1000**0.5'}
-  states: {coordinate: [1288, 220], rotation: 0, state: enabled}
+  states: {coordinate: [1008, 320], rotation: 0, state: enabled}
 - name: tx_amplitude
   id: variable
   parameters: {comment: 'Profile-dependent physical voltage scale', value: 'grleo_noise_rms * 10**(noise_test_snr_db / 20) if channel_profile == 2 else (full_link_voltage_scale if channel_profile == 3 else 1.0)'}
-  states: {coordinate: [1480, 220], rotation: 0, state: enabled}
+  states: {coordinate: [1200, 320], rotation: 0, state: enabled}
 
 - name: channel_fspl
   id: variable
   parameters: {comment: 'gr-leo: 0 none, 5 enabled', value: 5 if channel_profile == 3 else 0}
-  states: {coordinate: [24, 300], rotation: 0, state: enabled}
+  states: {coordinate: [24, 320], rotation: 0, state: enabled}
 - name: channel_doppler
   id: variable
   parameters: {comment: 'gr-leo: 0 none, 7 enabled', value: 7 if channel_profile >= 1 else 0}
-  states: {coordinate: [152, 300], rotation: 0, state: enabled}
+  states: {coordinate: [152, 320], rotation: 0, state: enabled}
 - name: channel_pointing
   id: variable
   parameters: {comment: 'gr-leo: 0 none, 6 enabled', value: 6 if channel_profile == 3 else 0}
-  states: {coordinate: [288, 300], rotation: 0, state: enabled}
+  states: {coordinate: [288, 320], rotation: 0, state: enabled}
 - name: channel_atmosphere
   id: variable
   parameters: {comment: 'gr-leo: 0 none, 1 ITU', value: 1 if channel_profile == 3 else 0}
-  states: {coordinate: [424, 300], rotation: 0, state: enabled}
+  states: {coordinate: [424, 320], rotation: 0, state: enabled}
 - name: channel_rain
   id: variable
   parameters: {comment: 'gr-leo: 0 none, 4 local rainfall rate', value: 4 if channel_profile == 3 else 0}
-  states: {coordinate: [568, 300], rotation: 0, state: enabled}
+  states: {coordinate: [568, 320], rotation: 0, state: enabled}
 - name: channel_noise
   id: variable
   parameters: {comment: 'gr-leo: 0 none, 1 Gaussian link noise', value: 1 if channel_profile >= 2 else 0}
-  states: {coordinate: [696, 300], rotation: 0, state: enabled}
+  states: {coordinate: [696, 320], rotation: 0, state: enabled}
 
 - name: qpsk_constellation
   id: variable_constellation
@@ -212,7 +214,7 @@ blocks:
     soft_dec_lut: None
     sym_map: '[0, 1, 3, 2]'
     type: qpsk
-  states: {coordinate: [840, 300], rotation: 0, state: enabled}
+  states: {coordinate: [2088, 240], rotation: 0, state: enabled}
 - name: cc_encoder
   id: variable_cc_encoder_def
   parameters:
@@ -226,7 +228,7 @@ blocks:
     polys: '[109, 79]'
     rate: '2'
     state_start: '0'
-  states: {coordinate: [1000, 300], rotation: 0, state: enabled}
+  states: {coordinate: [2250, 240], rotation: 0, state: enabled}
 - name: cc_decoder
   id: variable_cc_decoder_def
   parameters:
@@ -242,24 +244,24 @@ blocks:
     state_end: '0'
     state_start: '0'
     value: '"ok"'
-  states: {coordinate: [1160, 300], rotation: 0, state: enabled}
+  states: {coordinate: [2410, 240], rotation: 0, state: enabled}
 
 - name: satellite_tx_antenna
   id: variable_antenna
   parameters: {aperture_efficiency: '55', beamwidth: '60', boom_length: '0', circumference: '0', diameter: '0', frequency: carrier_frequency, gain: satellite_tx_gain_db, lp: '0.5', pointing_error: '0', polarization: '0', rolloff_gain: '0', turn_spacing: '0', turns: '0', type: '3', value: '"ok"'}
-  states: {coordinate: [24, 380], rotation: 0, state: enabled}
+  states: {coordinate: [780, 410], rotation: 0, state: enabled}
 - name: satellite_rx_antenna
   id: variable_antenna
   parameters: {aperture_efficiency: '55', beamwidth: '360', boom_length: '0', circumference: '0', diameter: '0', frequency: carrier_frequency, gain: '0', lp: '0.5', pointing_error: '0', polarization: '0', rolloff_gain: '0', turn_spacing: '0', turns: '0', type: '3', value: '"ok"'}
-  states: {coordinate: [192, 380], rotation: 0, state: enabled}
+  states: {coordinate: [950, 410], rotation: 0, state: enabled}
 - name: ground_tx_antenna
   id: variable_antenna
   parameters: {aperture_efficiency: '55', beamwidth: '360', boom_length: '0', circumference: '0', diameter: '0', frequency: carrier_frequency, gain: '0', lp: '0.5', pointing_error: '0', polarization: '0', rolloff_gain: '0', turn_spacing: '0', turns: '0', type: '3', value: '"ok"'}
-  states: {coordinate: [360, 380], rotation: 0, state: enabled}
+  states: {coordinate: [1120, 410], rotation: 0, state: enabled}
 - name: ground_rx_antenna
   id: variable_antenna
   parameters: {aperture_efficiency: ground_aperture_efficiency * 100, beamwidth: '0', boom_length: '0', circumference: '0', diameter: ground_dish_diameter_m, frequency: carrier_frequency, gain: '0', lp: '0.5', pointing_error: '0', polarization: '0', rolloff_gain: '0', turn_spacing: '0', turns: '0', type: '2', value: '"ok"'}
-  states: {coordinate: [528, 380], rotation: 0, state: enabled}
+  states: {coordinate: [1290, 410], rotation: 0, state: enabled}
 - name: noaa20_satellite
   id: variable_satellite
   parameters:
@@ -275,7 +277,7 @@ blocks:
     tx_antenna: satellite_tx_antenna
     tx_power_dbm: satellite_tx_power_dbm
     value: '"ok"'
-  states: {coordinate: [696, 380], rotation: 0, state: enabled}
+  states: {coordinate: [760, 490], rotation: 0, state: enabled}
 - name: zawiya_tracker
   id: variable_tracker
   parameters:
@@ -295,7 +297,7 @@ blocks:
     tx_antenna: ground_tx_antenna
     tx_power_dbm: '37'
     value: '"ok"'
-  states: {coordinate: [928, 380], rotation: 0, state: enabled}
+  states: {coordinate: [992, 490], rotation: 0, state: enabled}
 - name: leo_model
   id: variable_leo_model_def
   parameters:
@@ -311,126 +313,126 @@ blocks:
     temperature: '20'
     tracker: zawiya_tracker
     value: '"ok"'
-  states: {coordinate: [1160, 380], rotation: 0, state: enabled}
+  states: {coordinate: [1224, 490], rotation: 0, state: enabled}
 
 - name: note_source
   id: note
-  parameters: {note: 'IMAGE SOURCE — external MSB-first training + RGB payload + tail framing'}
-  states: {coordinate: [24, 500], rotation: 0, state: enabled}
+  parameters: {note: 'IMAGE SOURCE'}
+  states: {coordinate: [24, 590], rotation: 0, state: enabled}
 - name: note_tx
   id: note
-  parameters: {note: 'TRANSMITTER — terminated rate-1/2 K=7 [109,79], differential Gray QPSK, RRC'}
-  states: {coordinate: [240, 500], rotation: 0, state: enabled}
+  parameters: {note: 'TRANSMITTER — RATE-1/2 K=7, DIFFERENTIAL GRAY QPSK, RRC'}
+  states: {coordinate: [150, 590], rotation: 0, state: enabled}
 - name: note_channel
   id: note
-  parameters: {note: 'X-BAND LEO CHANNEL — Zawiya, frozen NOAA-20-inspired TLE, representative antennas'}
-  states: {coordinate: [872, 500], rotation: 0, state: enabled}
+  parameters: {note: 'X-BAND gr-leo CHANNEL'}
+  states: {coordinate: [1030, 590], rotation: 0, state: enabled}
 - name: note_rx
   id: note
-  parameters: {note: 'SYNCHRONIZED RECEIVER — AGC, matched RRC, FLL, Gardner, QPSK phase recovery'}
-  states: {coordinate: [1280, 500], rotation: 0, state: enabled}
+  parameters: {note: 'SYNCHRONIZED RECEIVER — AGC, MATCHED RRC, FLL, GARDNER, COSTAS'}
+  states: {coordinate: [1200, 590], rotation: 0, state: enabled}
 - name: note_output
   id: note
-  parameters: {note: 'OUTPUT AND DIAGNOSTICS — complete decoded logical-bit stream; extraction is external'}
-  states: {coordinate: [1512, 820], rotation: 0, state: enabled}
+  parameters: {note: 'OUTPUT — DECODED LOGICAL BITS'}
+  states: {coordinate: [2520, 590], rotation: 0, state: enabled}
 
 - name: framed_bit_source
   id: blocks_file_source
   parameters: {begin_tag: pmt.PMT_NIL, file: working/tx_framed_bits.bin, length: '0', offset: '0', repeat: 'False', type: byte, vlen: '1'}
-  states: {coordinate: [24, 580], rotation: 0, state: enabled}
+  states: {coordinate: [24, 660], rotation: 0, state: enabled}
 - name: fec_encoder
   id: fec_extended_encoder
   parameters: {encoder_list: cc_encoder, puncpat: '"11"', threadtype: none}
-  states: {coordinate: [176, 580], rotation: 0, state: enabled}
+  states: {coordinate: [150, 660], rotation: 0, state: enabled}
 - name: coded_bits_to_symbols
   id: blocks_repack_bits_bb
   parameters: {align_output: 'False', endianness: gr.GR_MSB_FIRST, k: '1', l: '2', len_tag_key: '""'}
-  states: {coordinate: [320, 580], rotation: 0, state: enabled}
+  states: {coordinate: [280, 660], rotation: 0, state: enabled}
 - name: differential_encoder
   id: digital_diff_encoder_bb
   parameters: {coding: digital.DIFF_DIFFERENTIAL, modulus: '4'}
-  states: {coordinate: [488, 580], rotation: 0, state: enabled}
+  states: {coordinate: [420, 660], rotation: 0, state: enabled}
 - name: qpsk_mapper
   id: digital_constellation_encoder_bc
   parameters: {constellation: qpsk_constellation}
-  states: {coordinate: [624, 580], rotation: 0, state: enabled}
+  states: {coordinate: [550, 660], rotation: 0, state: enabled}
 - name: transmit_rrc
   id: interp_fir_filter_xxx
   parameters: {interp: samples_per_symbol, samp_delay: '0', taps: rrc_taps, type: ccf}
-  states: {coordinate: [760, 580], rotation: 0, state: enabled}
+  states: {coordinate: [680, 660], rotation: 0, state: enabled}
 - name: amplitude_control
   id: blocks_multiply_const_vxx
   parameters: {const: tx_amplitude / 2.0, type: complex, vlen: '1'}
-  states: {coordinate: [896, 580], rotation: 0, state: enabled}
+  states: {coordinate: [810, 660], rotation: 0, state: enabled}
 - name: simulation_throttle
   id: blocks_throttle
   parameters: {ignoretag: 'True', samples_per_second: sample_rate, type: complex, vlen: '1'}
-  states: {coordinate: [1040, 580], rotation: 0, state: enabled}
+  states: {coordinate: [940, 660], rotation: 0, state: enabled}
 - name: leo_channel
   id: leo_channel_model
   parameters: {filename: results/channel_log.csv, model: leo_model, noise_type: channel_noise, sample_rate: sample_rate, store_csv: '1'}
-  states: {coordinate: [1184, 580], rotation: 0, state: enabled}
+  states: {coordinate: [1070, 660], rotation: 0, state: enabled}
 - name: receiver_agc
   id: analog_agc_xx
   parameters: {gain: '1.0', max_gain: 1e12, rate: 1e-4, reference: '1.0', type: complex}
-  states: {coordinate: [1336, 580], rotation: 0, state: enabled}
+  states: {coordinate: [1200, 660], rotation: 0, state: enabled}
 - name: matched_rrc
   id: fir_filter_xxx
   parameters: {decim: '1', samp_delay: '0', taps: rrc_taps, type: ccf}
-  states: {coordinate: [1472, 580], rotation: 0, state: enabled}
+  states: {coordinate: [1330, 660], rotation: 0, state: enabled}
 - name: coarse_fll
   id: digital_fll_band_edge_cc
   parameters: {filter_size: '45', rolloff: rolloff, samps_per_sym: samples_per_symbol, type: cc, w: '0.02'}
-  states: {coordinate: [1608, 580], rotation: 0, state: enabled}
+  states: {coordinate: [1460, 660], rotation: 0, state: enabled}
 - name: gardner_symbol_sync
   id: digital_symbol_sync_xx
   parameters: {constellation: qpsk_constellation, damping: '1.0', loop_bw: '0.01', max_dev: '0.5', nfilters: '128', osps: '1', pfb_mf_taps: '[]', resamp_type: digital.IR_MMSE_8TAP, sps: samples_per_symbol, ted_gain: '1.0', ted_type: digital.TED_GARDNER, type: cc}
-  states: {coordinate: [1752, 580], rotation: 0, state: enabled}
+  states: {coordinate: [1590, 660], rotation: 0, state: enabled}
 - name: qpsk_phase_recovery
   id: digital_costas_loop_cc
   parameters: {order: '4', use_snr: 'False', w: '0.01'}
-  states: {coordinate: [1920, 580], rotation: 0, state: enabled}
+  states: {coordinate: [1740, 660], rotation: 0, state: enabled}
 - name: qpsk_decoder
   id: digital_constellation_decoder_cb
   parameters: {constellation: qpsk_constellation}
-  states: {coordinate: [2056, 580], rotation: 0, state: enabled}
+  states: {coordinate: [1870, 660], rotation: 0, state: enabled}
 - name: differential_decoder
   id: digital_diff_decoder_bb
   parameters: {coding: digital.DIFF_DIFFERENTIAL, modulus: '4'}
-  states: {coordinate: [2192, 580], rotation: 0, state: enabled}
+  states: {coordinate: [2000, 660], rotation: 0, state: enabled}
 - name: symbols_to_coded_bits
   id: blocks_repack_bits_bb
   parameters: {align_output: 'False', endianness: gr.GR_MSB_FIRST, k: '2', l: '1', len_tag_key: '""'}
-  states: {coordinate: [2344, 580], rotation: 0, state: enabled}
+  states: {coordinate: [2130, 660], rotation: 0, state: enabled}
 - name: coded_alignment
   id: blocks_skiphead
   parameters: {num_items: sync_coded_bit_skip, type: byte, vlen: '1'}
-  states: {coordinate: [2504, 580], rotation: 0, state: enabled}
+  states: {coordinate: [2260, 660], rotation: 0, state: enabled}
 - name: hard_bits_to_soft_sign
   id: digital_map_bb
   parameters: {map: '[-1, 1]'}
-  states: {coordinate: [2648, 580], rotation: 0, state: enabled}
+  states: {coordinate: [2390, 660], rotation: 0, state: enabled}
 - name: soft_char_to_float
   id: blocks_char_to_float
   parameters: {scale: '1', vlen: '1'}
-  states: {coordinate: [2784, 580], rotation: 0, state: enabled}
+  states: {coordinate: [2520, 660], rotation: 0, state: enabled}
 - name: viterbi_decoder
   id: fec_extended_decoder
   parameters: {ann: None, decoder_list: cc_decoder, puncpat: '"11"', threadtype: none, value: fec_extended_decoder}
-  states: {coordinate: [2920, 580], rotation: 0, state: enabled}
+  states: {coordinate: [2650, 660], rotation: 0, state: enabled}
 - name: decoded_bit_sink
   id: blocks_file_sink
   parameters: {append: 'False', file: working/rx_decoded_bits.bin, type: byte, unbuffered: 'False', vlen: '1'}
-  states: {coordinate: [3064, 580], rotation: 0, state: enabled}
+  states: {coordinate: [2780, 660], rotation: 0, state: enabled}
 
 - name: recovered_constellation_display
   id: qtgui_const_sink_x
   parameters: {autoscale: 'True', color1: '"green"', grid: 'True', gui_hint: '0,0,1,1', label1: Synchronized QPSK symbols, marker1: '0', name: '"Recovered Constellation"', nconnections: '1', size: '1024', style1: '0', type: complex, update_time: '0.1', width1: '1', xmax: '2', xmin: '-2', ymax: '2', ymin: '-2'}
-  states: {coordinate: [1920, 700], rotation: 0, state: enabled}
+  states: {coordinate: [1740, 800], rotation: 0, state: enabled}
 - name: received_spectrum_display
   id: qtgui_freq_sink_x
   parameters: {autoscale: 'True', average: '0.1', bw: sample_rate, color1: '"red"', fc: '0', fftsize: '2048', grid: 'True', gui_hint: '0,1,1,1', label1: After gr-leo channel, name: '"Received Spectrum"', nconnections: '1', norm_window: 'False', showports: 'False', type: complex, update_time: '0.1', width1: '1', wintype: window.WIN_BLACKMAN_hARRIS, ymax: '10', ymin: '-160'}
-  states: {coordinate: [944, 700], rotation: 0, state: enabled}
+  states: {coordinate: [1070, 800], rotation: 0, state: enabled}
 
 connections:
 - [framed_bit_source, '0', fec_encoder, '0']
