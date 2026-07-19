@@ -1,0 +1,16 @@
+{
+  "total_transmitted_payload_bits": 25165824,
+  "total_received_comparable_bits": 25165824,
+  "bit_errors": 0,
+  "ber": 0.0,
+  "byte_errors": 0,
+  "byte_error_rate": 0.0,
+  "pixels_with_error": 0,
+  "pixel_error_rate": 0.0,
+  "mean_absolute_pixel_error": 0.0,
+  "psnr_db": "Infinity",
+  "transmitted_sha256": "230db23a35f5b7bc79d2861a5698a19a7df99d94b90f9e9f1f15ce051d9b2c4d",
+  "received_sha256": "230db23a35f5b7bc79d2861a5698a19a7df99d94b90f9e9f1f15ce051d9b2c4d",
+  "exact_file_match": true,
+  "received_bytes_available": 3145728
+}

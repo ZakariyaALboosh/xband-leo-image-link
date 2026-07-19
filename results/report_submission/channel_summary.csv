@@ -1,0 +1,6 @@
+profile_number,profile_name,elevation_min_deg,elevation_max_deg,range_min_km,range_max_km,doppler_min_hz,doppler_max_hz,path_loss_min_db,path_loss_max_db,atmospheric_loss_min_db,atmospheric_loss_max_db,rainfall_loss_min_db,rainfall_loss_max_db,pointing_loss_min_db,pointing_loss_max_db,link_margin_min_db,link_margin_max_db
+0,Clean,85.6818,86.0256,832.035,832.372,3902.85,6545.51,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,178.176,178.176
+1,Orbital Doppler only,85.6818,86.0256,832.035,832.372,3902.85,6545.51,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,178.176,178.176
+2,Doppler plus mild seeded AWGN (12 dB),85.6818,86.0256,832.035,832.372,3902.85,6545.51,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,178.176,178.176
+3,Doppler plus moderate seeded AWGN (5 dB),85.6818,86.0256,832.035,832.372,3902.85,6545.51,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,178.176,178.176
+4,Full propagation plus seeded kTB noise,85.6818,86.0256,832.035,832.372,3902.85,6545.51,168.708,168.712,0.0470041,0.0470041,0.947984,0.948952,0.0,0.0,8.46852,8.47301

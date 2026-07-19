@@ -1,0 +1,9 @@
+<<< Welcome to GNU Radio Companion Compiler 3.10.12.0 >>>
+
+Block paths:
+	/root/.local/state/gnuradio
+	/root/radioconda/share/gnuradio/grc/blocks
+
+>>> Loading: /root/xband_image_link/results/report_submission.in_progress/validation/seeded_determinism/run_b/xband_leo_image_link_simple.grc
+>>> Generating: /root/xband_image_link/xband_leo_image_link_simple.py
+>>> Warning: The block 'simulation_throttle' is deprecated.
