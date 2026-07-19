@@ -1,20 +1,63 @@
-# NOAA-20-Inspired X-Band Image Link
+# NOAA-20-Inspired X-Band LEO Image Link
 
 > A NOAA-20-inspired X-band direct-broadcast image-link simulation implemented in GNU Radio Companion. The model uses representative QPSK data-rate and convolutional-coding parameters and applies orbit-dependent propagation impairments using gr-leo. It is a system-level educational simulation and not a complete operational NOAA-20 HRD decoder.
 
-The source of truth is `xband_leo_image_link.grc`. Every communications and DSP stage is a standard GNU Radio or `gr-leo` block on the Companion canvas. There are no Embedded Python Blocks and no hand-written `gr.top_block` implementation.
+This repository contains two editable GNU Radio Companion implementations:
+
+- `xband_leo_image_link_simple.grc` is the recommended, single-receiver flowgraph.
+- `xband_leo_image_link.grc` is the unchanged detailed reference with manual framing, two receiver branches, and additional diagnostics.
+
+Both graphs keep all communications DSP on the GRC canvas. There are no Embedded Python Blocks and no hand-written `gr.top_block`. FPGA processing and operational CCSDS/JPSS decoding are future work only.
+
+## Simplified architecture
+
+```text
+Image preparation
+→ convolutional coding
+→ QPSK modulation
+→ gr-leo X-band channel
+→ synchronized QPSK receiver
+→ Viterbi decoding
+→ image reconstruction
+```
+
+The visible main path is:
+
+```text
+Framed Bit File Source
+→ Extended Encoder
+→ Repack Bits 1→2
+→ Differential Encoder
+→ QPSK Constellation Encoder
+→ RRC Interpolating FIR
+→ amplitude control
+→ Throttle
+→ gr-leo Channel Model
+→ AGC
+→ RRC matched FIR
+→ FLL Band-Edge
+→ Gardner Symbol Sync
+→ fourth-order Costas Loop
+→ QPSK Constellation Decoder
+→ Differential Decoder
+→ Repack Bits 2→1
+→ coded-stream alignment
+→ hard-to-soft conversion
+→ Extended Decoder (Viterbi)
+→ Decoded Bit File Sink
+```
+
+It has 22 main-path blocks when file I/O and representation adapters are counted. It contains one synchronized receiver, two GUI sinks (`Received Spectrum` and `Recovered Constellation`), and no receiver selector.
 
 ## Verified environment
 
-The submitted graph was generated and exercised in an isolated environment containing:
+Validation used:
 
 - GNU Radio 3.10.12.0
 - `gnuradio-leo` 1.0.0.post20250214+g8f62b92
 - Python 3.13.14
 
-This package exposes `gr-leo` as `from gnuradio import leo`; the older top-level `import leo` check fails. The installed data package contained `leo_channel.grc`. The historical `upsat_leo.grc` and `upsat_leo_nogui.grc` files were absent from the installed example directory, but were inspected in the exact package source commit.
-
-`gnuradio-companion --version` is not implemented by this GNU Radio build. Use the runtime query below instead.
+This package exposes gr-leo as `from gnuradio import leo`. The installed package contained `leo_channel.grc`; its GRC YAML and source were inspected for the exact block IDs and parameters used here.
 
 ```bat
 gnuradio-companion --help
@@ -23,77 +66,84 @@ python -c "from gnuradio import leo; print('gr-leo import OK:', leo.__file__)"
 dir "%CONDA_PREFIX%\share\gnuradio\examples\leo"
 ```
 
-If `gnuradio-leo` is missing, install it explicitly in the Radioconda Prompt:
+If gr-leo is absent, install it explicitly from a Radioconda Prompt:
 
 ```bat
 conda install ryanvolz::gnuradio-leo
 ```
 
-The project never installs or modifies the user's environment automatically.
+The project does not install or modify the environment automatically.
 
-## Project workflow on Windows Radioconda
+## Windows Radioconda workflow
 
-Open a Radioconda Prompt and run:
+From the repository directory:
 
 ```bat
-cd xband_image_link
 python prepare_image.py
 python find_noaa20_pass.py
-gnuradio-companion xband_leo_image_link.grc
+gnuradio-companion xband_leo_image_link_simple.grc
 ```
 
-In GRC, inspect the variables, generate the Python file, and run the graph. The source is finite, but the QT window remains open for inspection; close it after the plots stabilize. File Sink blocks have **Append file = Off**, so normal runs overwrite prior outputs. After an interrupted experiment, it is still prudent to clear stale files before restarting:
+Generate and run without opening GRC:
 
 ```bat
-del working\rx_bits.bin working\rx_image.rgb results\channel_log.csv 2>nul
-```
-
-Command-line generation uses the syntax verified with GNU Radio 3.10.12.0:
-
-```bat
-grcc -o . xband_leo_image_link.grc
-python xband_leo_image_link.py
-python reconstruct_image.py
+grcc -o . xband_leo_image_link_simple.grc
+python xband_leo_image_link_simple.py
+python reconstruct_image.py --source decoded
 python calculate_results.py
 ```
 
-## Canvas organization and block inventory
+The File Sink uses `Append = Off`. Before a restarted or interrupted experiment, stale outputs may be removed explicitly:
 
-The canvas is arranged left-to-right as image source, transmitter, LEO channel, receiver, and output/metrics. The exact installed GRC block IDs used are:
-
-- `blocks_file_source`, `blocks_file_sink`, `blocks_repack_bits_bb`
-- `blocks_vector_source_x`, `blocks_stream_mux`, `blocks_skiphead`, `blocks_head`
-- `variable_cc_encoder_def`, `fec_extended_encoder`
-- `variable_cc_decoder_def`, `fec_extended_decoder`
-- `variable_constellation`, `digital_constellation_encoder_bc`, `digital_constellation_decoder_cb`
-- `digital_diff_encoder_bb`, `digital_diff_decoder_bb`
-- `interp_fir_filter_xxx`, `fir_filter_xxx`
-- `analog_agc_xx`, `digital_fll_band_edge_cc`, `digital_symbol_sync_xx`, `digital_costas_loop_cc`
-- `variable_antenna`, `variable_satellite`, `variable_tracker`, `variable_leo_model_def`, `leo_channel_model`
-- QT constellation, frequency, and time sinks for the required diagnostic displays
-
-The primary synchronized receive path is:
-
-```text
-gr-leo output
-→ AGC
-→ RRC matched filter
-→ FLL Band-Edge
-→ Gardner Symbol Sync
-→ fourth-order Costas Loop
-→ QPSK Constellation Decoder
-→ differential ambiguity removal
-→ hard-bit sign mapping
-→ terminated Viterbi decoder
-→ MSB-first byte packing
-→ RGB File Sink
+```bat
+del working\rx_decoded_bits.bin working\rx_image.rgb results\channel_log.csv 2>nul
 ```
 
-`receiver_path = 1` selects this path. `receiver_path = 0` selects a fixed-phase, fixed-timing calibration branch with matched-filter decimation but no carrier or timing synchronization. The latter is intentionally used to demonstrate Doppler failure.
+To reconstruct output from the detailed legacy graph, use `python reconstruct_image.py --source legacy`. Automatic mode refuses to use a decoded stream older than the current transmit payload.
 
-## Rates and pulse shaping
+## External image framing
 
-The following relationships are visible GRC variables:
+`prepare_image.py` reads the image dimensions and source path from `simulation_config.json`, normalizes the image to RGB8, and writes:
+
+```text
+input/normalized_source.png
+working/tx_image.rgb
+working/tx_framed_bits.bin
+```
+
+The framed-bit file stores one logical bit per byte (`0x00` or `0x01`) in this order:
+
+```text
+training bits + raw RGB payload bits + tail bits
+```
+
+Image bytes are expanded MSB first. The deterministic training octet is `0,1,1,0,1,0,0,1`; the tail octet is `1,0,0,1,0,1,1,0`. Four 8,192-bit terminated-code frames are used for both acquisition training and tail protection by default. The configuration records `training_bits`, `payload_start_bit`, `payload_bits`, `tail_bits`, and `framed_bits`.
+
+The simple graph writes the entire available Viterbi output to `working/rx_decoded_bits.bin`. `reconstruct_image.py` validates its age and bit values, skips the configured training section, extracts exactly `payload_bits`, packs MSB first, and creates:
+
+```text
+working/rx_image.rgb
+results/recovered_image.png
+results/comparison.png
+```
+
+For the 256×256 test, the synchronizers consume one 8,192-bit terminated frame from the finite acquisition/tail allowance. The measured decoded output is 1,630,208 bits; the required training plus payload is 1,605,632 bits. No image-based or arbitrary payload crop occurs in GNU Radio.
+
+## Configurable image resolution
+
+The default debug configuration is 256×256 RGB8. To run 1024×1024, set `width` and `height` in `simulation_config.json`, then mirror those values in the visible GRC variables `image_width` and `image_height`. Payload length is derived from width, height, and three RGB channels; it is not hardcoded as `256 * 256 * 3`.
+
+The included demonstration source is:
+
+```text
+input/earth_observation_libya_modis_20120417.jpg
+```
+
+It is a [NASA Earth Observatory Terra/MODIS image of dust off the Libya coast](https://earthobservatory.nasa.gov/images/77682/dust-off-the-libya-coast), acquired April 17, 2012. Attribution is recorded in `simulation_config.json`. Select its local path as `source_image`, set 1024×1024 in the configuration and GRC variables, then rerun preparation.
+
+## Rates and coding
+
+These relationships are visible GRC variables:
 
 ```python
 information_rate = reference_information_rate * rate_scale
@@ -103,9 +153,7 @@ sample_rate = symbol_rate * samples_per_symbol
 occupied_bandwidth = symbol_rate * (1 + rolloff)
 ```
 
-The submitted default is practical mode, `rate_scale = 0.1`:
-
-| Quantity | Practical | Full inspired rate |
+| Quantity | Practical default (`rate_scale=0.1`) | Full inspired (`rate_scale=1.0`) |
 |---|---:|---:|
 | Information rate | 1.5 Mbit/s | 15 Mbit/s |
 | Coded bit rate | 3.0 Mbit/s | 30 Mbit/s |
@@ -113,35 +161,43 @@ The submitted default is practical mode, `rate_scale = 0.1`:
 | Complex sample rate | 3.0 MS/s | 30 MS/s |
 | Occupied bandwidth | 2.025 MHz | 20.25 MHz |
 
-Set `rate_scale = 1.0` for the full inspired rate. Disable the six QT GUI sink blocks for long or full-rate runs. Repeating the image is intentionally disabled for deterministic single-image tests.
+For full-rate reports, set `rate_scale` and the derived `rates` values in `simulation_config.json` as well as the visible GRC variable. Finite simulations may run slower than real time. Disable the two GUI sinks in GRC for long runs if required.
 
-Both RRC filters use roll-off 0.35, two samples per symbol, an 11-symbol span, and 23 odd-length taps. The built-in QPSK object's points are scaled by 1/2 in the visible amplitude-normalization block, producing unit average symbol power before any profile-specific physical voltage scaling.
+The code is rate 1/2, constraint length 7, terminated at state zero, with conceptual octal generators 171 and 133. GNU Radio 3.10 uses the corresponding bit-reversed decimal representation `[109, 79]` in the visible encoder and decoder definition blocks. QPSK is Gray coded, uses two samples per symbol, and has RRC roll-off 0.35. Differential encoding and decoding occur exactly once.
 
-## Bit ordering, QPSK, and convolutional code
+## Ready-made QPSK block evaluation
 
-Image bytes are unpacked MSB first and repacked consistently at the receiver. The installed QPSK constellation is Gray coded; the explicit differential encoder/decoder pair removes the Costas-loop quadrant ambiguity. Its unscaled point order is `(-√2-j√2), (√2-j√2), (-√2+j√2), (√2+j√2)` and its pre-differential map is `[0, 2, 3, 1]`.
+The installed Constellation Modulator accepts packed byte input. Source inspection showed its internal `packed_to_unpacked_bb(bits_per_symbol, GR_MSB_FIRST)`, built-in pre-differential map, differential encoder, mapper, and RRC resampler. It was tested after a required Repack Bits 1→8 block as part of the candidate ready-made transmitter/receiver path. That clean regression produced BER 0.4887, so mapping compatibility remained ambiguous and the modulator was rejected.
 
-The convolutional code is rate 1/2 with constraint length 7. The conceptual generators are octal 171 and 133. GNU Radio's installed CC example uses the bit-reversed decimal representation `[109, 79]`, which is used by both definition blocks. Each 1024-byte codeword is terminated at state zero. Since 196,608 bytes is exactly 192 codewords, no payload padding is required.
+The installed Constellation Receiver was then tested with the proven explicit transmitter while retaining AGC, matched filtering, FLL, and Gardner synchronization. Its clean regression produced BER 0.3798; it was also rejected. The final simple graph therefore retains the explicit modulation chain and `Costas Loop → Constellation Decoder`. The receiver mapping was not changed merely to force either candidate to pass.
 
-Four deterministic codewords precede the image and four follow it. They provide acquisition time and preserve the end of the finite FIR response. Correlation of the transmitted and synchronized coded-bit diagnostic streams measured a 64-coded-bit acquisition offset. That measured value is the visible `sync_coded_bit_skip`; it is not an image-based crop. The fixed calibration path removes 22 coded bits, calculated from the two 23-tap RRC filter group delays.
+## gr-leo X-band channel
 
-## Framing status
+The central visible configuration area contains:
 
-The executable graph is **Milestone A**, a fixed-length raw RGB stream divided internally into terminated 1024-byte FEC codewords. It is fully working and hash-verifiable, but it does not yet implement the requested access-code/header/CRC protocol.
+- satellite TX and RX antenna objects
+- ground-station TX and RX antenna objects
+- NOAA-20-inspired Satellite object
+- Zawiya Tracker object
+- LEO Model Definition
+- LEO Channel Model
 
-The reserved Milestone B format in `simulation_config.json` is:
+The carrier is 7.812 GHz. The approximate ground station is 32.75° N, 12.73° E, 20 m above mean sea level; altitude is a simulation assumption. Representative assumptions—not official NOAA-20 hardware—are a 5 dBi satellite TX antenna, 2.4 m ground dish, 55% aperture efficiency, 30 dBm satellite power, 1 dB receiver noise figure, and 290 K receiver temperature.
 
-```text
-32-bit access code 0x1ACFFC1D
-32-bit big-endian frame sequence number
-32-bit big-endian payload length in bytes
-up to 1024 payload bytes
-32-bit CRC
-```
+Channel profiles are selected by the visible `channel_profile` variable:
 
-This is an academic demonstration format and is not JPSS or CCSDS compatible. No claim is made that Milestone B is implemented by the submitted graph.
+| Profile | Impairments |
+|---:|---|
+| 0 | Clean; all propagation impairments and noise disabled |
+| 1 | Orbital Doppler only |
+| 2 | Doppler and gr-leo Gaussian link noise |
+| 3 | Doppler, FSPL, gas, rain, pointing loss, and noise |
 
-## Orbit and ground station
+The installed Link Margin option calculates a logged diagnostic from transmit power, antenna gains, loss, and noise floor. Source inspection confirms it does not rescale the complex stream. The visible `full_link_voltage_scale` represents the assumed TX power and antenna voltage terms for profile 3.
+
+This gr-leo version logs time, slant range, elevation, path loss, atmospheric loss, rainfall loss, pointing loss, Doppler shift, and link margin. It does not log range rate.
+
+## Orbit snapshot
 
 The frozen TLE is used without replacement:
 
@@ -151,76 +207,44 @@ NOAA 20
 2 43013  98.7772 138.0652 0001490 121.5711 238.5610 14.19516763448824
 ```
 
-Its epoch is `2026-07-17T20:59:00.507552Z`. The SGP4 helper selected a pass over the approximate Zawiya station from `2026-07-18T00:55:40.507552Z` to `2026-07-18T01:11:00.507552Z`, with calculated maximum elevation 86.203°. The ten-second GRC observation is centered on culmination. Station coordinates are 32.75° N, 12.73° E, and 20 m above mean sea level; the altitude is a simulation assumption.
+Its epoch is `2026-07-17T20:59:00.507552Z`. `find_noaa20_pass.py` selected the pass from `2026-07-18T00:55:40.507552Z` to `2026-07-18T01:11:00.507552Z`, with calculated maximum elevation 86.203°. The fixed GRC interval begins at `2026-07-18T01:03:17.507552Z`.
 
-## Official-inspired and assumed parameters
+## Executed validation
 
-Reference values supplied for the educational model are the 7.812 GHz carrier, 15 Mbit/s information rate, QPSK, rate-1/2 coding, 15 Msymbol/s, two samples per symbol, and 0.35 roll-off.
-
-The following are representative academic assumptions, not NOAA-20 hardware specifications:
-
-- satellite custom TX antenna: 5 dBiC, 60° beamwidth, zero initial pointing error
-- ground RX antenna: 2.4 m parabolic reflector, 55% aperture efficiency
-- satellite transmit power: 30 dBm
-- ground receiver noise figure: 1 dB
-- ground effective receiver temperature: 290 K
-- local rainfall rate for the optional full profile: 25 mm/h
-
-The Satellite RX and ground TX antennas are present because the installed `gr-leo` Satellite and Tracker objects require both directions; they do not participate in downlink attenuation.
-
-## Channel profiles
-
-Change the visible integer `channel_profile`, regenerate, and rerun:
-
-| Profile | Impairments |
-|---:|---|
-| 0 | Clean verification; all impairments and noise disabled |
-| 1 | Orbital Doppler only |
-| 2 | Doppler plus gr-leo white Gaussian noise |
-| 3 | Doppler, FSPL, ITU gas loss, local rain loss, pointing loss, and noise |
-
-For Profile 2, `noise_test_snr_db` controls an explicit pre-channel voltage scale derived from the installed implementation's `kTB`, noise figure, and bandwidth convention. Suggested sweep points must be calibrated on the target Windows build because the gr-leo random source exposes no seed and synchronization can acquire differently between runs.
-
-The installed Link Margin option is diagnostic only. Source inspection shows that it computes an SNR-like logged value from transmit power, antenna gains, total loss, and noise floor. It does **not** change the complex samples or prevent underflow. The installed source also contains a TODO warning around this calculation. Profile 3 therefore uses a visible, derived `full_link_voltage_scale` for TX power and antenna voltage gains. Its `sqrt(1000)` factor matches the installed noise block's conversion before voltage generation; it is documented on the canvas rather than being an unexplained receiver gain.
-
-The CSV produced by this installed version contains exactly:
-
-```text
-Elapsed Time (us), Slant Range (km), Elevation (degrees),
-Path Loss (dB), Atmospheric Loss (dB), Rainfall Loss (dB),
-Pointing Loss (dB), Doppler Shift (Hz), Link Margin (dB)
-```
-
-Range rate is not a CSV column in this version.
-
-## Validation results
-
-The following tests were executed against the generated graph:
+All rows below were produced by commands executed in the stated GNU Radio environment.
 
 | Test | Result |
 |---|---|
-| Image prepare/direct reconstruction | Pass; exact RGB SHA-256 match |
-| GRC generation with `grcc -o .` | Pass |
-| Full coded, pulse-shaped, clean gr-leo loopback | Pass; BER 0 |
-| Clean recovered RGB hash | Pass; exact match |
-| Doppler only, calibration path without synchronization | BER 0.363814 |
-| Doppler only, FLL + Gardner + Costas | BER 0; exact match |
-| gr-leo CSV output | Pass; 1,092 data rows in the single-image interval |
-| Full representative channel, initial unscaled diagnostic | Ran; BER 0.5 |
-| Full representative channel with derived physical scale | Not completed reliably in this test container |
+| Legacy graph generation and reduced-rate clean baseline | Pass; BER 0; exact RGB match |
+| Simple graph generation, final architecture | Pass |
+| Ready-made Modulator + Receiver, reduced-rate clean | Rejected; BER 0.4887 |
+| Explicit transmitter + ready-made Receiver, reduced-rate clean | Rejected; BER 0.3798 |
+| Final simple graph, 256×256 reduced-rate clean | Pass; BER 0; exact RGB match |
+| Final simple graph, 256×256 full-rate clean | Pass; BER 0; exact RGB match |
+| Final simple graph, 256×256 full-rate Doppler | Pass; BER 0; 108 varying CSV Doppler samples |
+| Detailed synchronized graph, reduced-rate Doppler recheck | Pass; BER 0; exact RGB match |
+| Final simple graph, 1024×1024 Earth image, full-rate clean | Pass; BER 0; exact RGB match |
 
-During the Doppler test the CSV reported 4.831–6.546 kHz across the approximately 1.09 s image transfer. Thus Doppler produced a measured frequency shift and the receiver synchronization reduced BER from 0.363814 to zero.
+The simple full-rate Doppler run logged 6,377.4–6,545.51 Hz over its short finite transfer. The detailed reduced-rate synchronized comparison logged 4,830.73–6,545.51 Hz over 1,092 samples.
 
-The clean RGB SHA-256 is:
+Debug-image RGB SHA-256:
 
 ```text
 04cdb87c58cead80d7cae947078b77da5f6b9da79b78c690d7a53b59d76a049a
 ```
 
-## Known limitations
+1024×1024 Earth-observation RGB SHA-256:
 
-- Milestone B access-code/header/CRC framing is specified but not implemented.
-- Noise sweep image triplets were not validated reproducibly because the installed gr-leo noise generator offers no exposed seed.
-- The full representative link profile requires further calibration on Windows Radioconda; do not cite it as a validated NOAA-20 link budget.
-- The model does not implement JPSS packetization, CCSDS synchronization, interleaving, scrambling, or an operational HRD decoder.
-- The selected TLE and ground-station assumptions are reproducible simulation inputs, not a claim about a live pass or official receiving facility.
+```text
+230db23a35f5b7bc79d2861a5698a19a7df99d94b90f9e9f1f15ce051d9b2c4d
+```
+
+Run artifacts are preserved under `results/baseline`, `results/simple_clean_reduced`, `results/simple_clean_full_rate`, `results/simple_doppler_full_rate`, `results/legacy_doppler_recheck`, and `results/earth_observation_1024_full_rate`.
+
+## Limitations
+
+- The finite synchronized output loses one terminated tail frame; the protected image payload is complete and hash-verifiable.
+- Noise-sweep image triplets and profile 3 were not rerun for this simplification and are not claimed as newly validated.
+- The model is a raw RGB physical-layer demonstration, not a complete link budget or hardware implementation.
+- It contains no FPGA, digital downconversion, channel decimation, packet headers, CRC, Reed–Solomon, CCSDS, JPSS packetization, or operational NOAA-20 decoding.
+- The frozen TLE and representative antennas provide reproducibility, not a claim about a current pass or official NOAA-20 hardware.

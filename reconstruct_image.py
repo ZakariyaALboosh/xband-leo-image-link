@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parent
 CONFIG = ROOT / "simulation_config.json"
 TX_RGB = ROOT / "working" / "tx_image.rgb"
 RX_RGB = ROOT / "working" / "rx_image.rgb"
+RX_DECODED_BITS = ROOT / "working" / "rx_decoded_bits.bin"
 RECOVERED = ROOT / "results" / "recovered_image.png"
 COMPARISON = ROOT / "results" / "comparison.png"
 
@@ -31,9 +33,37 @@ def read_exact(path: Path, expected: int) -> bytes:
         raise RuntimeError(f"Cannot read {path}: {exc}") from exc
     if len(data) < expected:
         raise ValueError(f"{path} has {len(data)} bytes; {expected} are required")
-    # The GRC Head block limits normal output. Any surplus is ignored only to
-    # tolerate a previously interrupted append-mode experiment.
     return data[:expected]
+
+
+def decoded_payload(config: dict) -> bytes:
+    framing = config.get("framing")
+    if not isinstance(framing, dict):
+        raise ValueError("Configuration has no framing metadata; rerun prepare_image.py")
+    if RX_DECODED_BITS.stat().st_mtime < TX_RGB.stat().st_mtime:
+        raise RuntimeError("Decoded bit stream is older than tx_image.rgb; rerun the simple flowgraph")
+    bits = np.frombuffer(RX_DECODED_BITS.read_bytes(), dtype=np.uint8)
+    if bits.size and np.any(bits > 1):
+        raise ValueError("Decoded stream must contain only one-byte 0 or 1 bit items")
+    start = int(framing["payload_start_bit"])
+    count = int(framing["payload_bits"])
+    if bits.size < start + count:
+        raise ValueError(f"Decoded stream has {bits.size} bits; {start + count} are required")
+    # np.packbits with big bit order exactly reverses the MSB-first expansion.
+    return np.packbits(bits[start : start + count], bitorder="big").tobytes()
+
+
+def received_payload(config: dict, source: str, expected: int) -> bytes:
+    use_decoded = source == "decoded" or (source == "auto" and RX_DECODED_BITS.exists())
+    if use_decoded:
+        payload = decoded_payload(config)
+        if len(payload) != expected:
+            raise ValueError(f"Decoded payload has {len(payload)} bytes; expected {expected}")
+        RX_RGB.write_bytes(payload)
+        return payload
+    if source == "decoded":
+        raise FileNotFoundError(f"Decoded bit stream is missing: {RX_DECODED_BITS}")
+    return read_exact(RX_RGB, expected)
 
 
 def labeled_comparison(original: Image.Image, recovered: Image.Image) -> Image.Image:
@@ -52,6 +82,12 @@ def labeled_comparison(original: Image.Image, recovered: Image.Image) -> Image.I
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--source", choices=("auto", "decoded", "legacy"), default="auto",
+        help="decoded uses the simple graph; legacy reads working/rx_image.rgb",
+    )
+    args = parser.parse_args()
     config = read_config()
     width = int(config["width"])
     height = int(config["height"])
@@ -63,7 +99,7 @@ def main() -> None:
         raise ValueError("Image dimensions do not agree with payload_bytes")
 
     transmitted = read_exact(TX_RGB, expected)
-    received = read_exact(RX_RGB, expected)
+    received = received_payload(config, args.source, expected)
     original = Image.fromarray(np.frombuffer(transmitted, np.uint8).reshape(height, width, 3), "RGB")
     recovered = Image.fromarray(np.frombuffer(received, np.uint8).reshape(height, width, 3), "RGB")
 

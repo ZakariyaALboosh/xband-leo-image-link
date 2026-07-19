@@ -1,5 +1,6 @@
 __pycache__/
 *.pyc
 xband_leo_image_link.py
+xband_leo_image_link_simple.py
 working/*.rgb
 working/*.bin

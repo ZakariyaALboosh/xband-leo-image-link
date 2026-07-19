@@ -1,7 +1,7 @@
 {
   "project": "NOAA-20-Inspired X-Band Image Link Simulation",
-  "rate_mode": "practical",
-  "rate_scale": 0.1,
+  "rate_mode": "full",
+  "rate_scale": 1.0,
   "reference_information_rate": 15000000.0,
   "code_rate": 0.5,
   "bits_per_symbol": 2,
@@ -9,11 +9,11 @@
   "rolloff": 0.35,
   "carrier_frequency_hz": 7812000000.0,
   "rates": {
-    "information_rate": 1500000.0,
-    "coded_bit_rate": 3000000.0,
-    "symbol_rate": 1500000.0,
-    "sample_rate": 3000000.0,
-    "occupied_bandwidth": 2025000.0
+    "information_rate": 15000000.0,
+    "coded_bit_rate": 30000000.0,
+    "symbol_rate": 15000000.0,
+    "sample_rate": 30000000.0,
+    "occupied_bandwidth": 20250000.0
   },
   "convolutional_code": {
     "rate": "1/2",
@@ -59,7 +59,7 @@
     "satellite_tx_power_dbm": 30.0
   },
   "grc_defaults": {
-    "channel_profile": 0,
+    "channel_profile": 1,
     "receiver_path": 1,
     "training_frames": 4,
     "sync_coded_bit_skip": 64,
@@ -78,18 +78,7 @@
     "doppler_only_synchronized_ber": 0.0,
     "doppler_logged_min_hz": 4830.73,
     "doppler_logged_max_hz": 6545.51,
-    "full_representative_unscaled_ber": 0.5,
-    "simple_clean_reduced_ber": 0.0,
-    "simple_clean_reduced_exact_rgb_match": true,
-    "simple_clean_full_rate_ber": 0.0,
-    "simple_clean_full_rate_exact_rgb_match": true,
-    "simple_doppler_full_rate_ber": 0.0,
-    "simple_doppler_logged_min_hz": 6377.4,
-    "simple_doppler_logged_max_hz": 6545.51,
-    "simple_earth_observation_1024_full_rate_ber": 0.0,
-    "simple_earth_observation_1024_exact_rgb_match": true,
-    "constellation_modulator_candidate_ber": 0.48873138427734375,
-    "constellation_receiver_candidate_ber": 0.3798065185546875
+    "full_representative_unscaled_ber": 0.5
   },
   "tle_epoch_utc": "2026-07-17T20:59:00.507552Z",
   "selected_pass": {
@@ -123,14 +112,6 @@
   "bit_order": "MSB first",
   "tx_rgb_sha256": "04cdb87c58cead80d7cae947078b77da5f6b9da79b78c690d7a53b59d76a049a",
   "normalized_source": "input/normalized_source.png",
-  "source_image": "input/input_image.png",
-  "earth_observation_demo": {
-    "local_file": "input/earth_observation_libya_modis_20120417.jpg",
-    "source_url": "https://eoimages.gsfc.nasa.gov/images/imagerecords/77000/77682/libya_tmo_2012108_lrg.jpg",
-    "attribution": "NASA Earth Observatory; Terra MODIS image by Jeff Schmaltz, LANCE/EOSDIS MODIS Rapid Response",
-    "width": 1024,
-    "height": 1024
-  },
   "framing": {
     "frame_payload_bytes": 1024,
     "frame_bits": 8192,
