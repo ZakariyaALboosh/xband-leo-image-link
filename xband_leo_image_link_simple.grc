@@ -48,7 +48,7 @@ blocks:
   states: {coordinate: [960, 110], rotation: 0, state: enabled}
 - name: channel_profile
   id: variable
-  parameters: {comment: '0 clean; 1 Doppler; 2 Doppler+noise; 3 representative full channel', value: '0'}
+  parameters: {comment: '0 clean; 1 Doppler; 2 Doppler+12 dB AWGN; 3 Doppler+5 dB AWGN; 4 full seeded channel', value: '0'}
   states: {coordinate: [1190, 110], rotation: 0, state: enabled}
 - name: frame_payload_bytes
   id: variable
@@ -62,18 +62,26 @@ blocks:
   id: variable
   parameters: {comment: 'Deterministic acquisition frames prepared outside GNU Radio', value: '4'}
   states: {coordinate: [960, 220], rotation: 0, state: enabled}
-- name: noise_test_snr_db
+- name: mild_snr_db
   id: variable
-  parameters: {comment: 'Controlled profile-2 receive SNR, dB', value: '30.0'}
+  parameters: {comment: 'Fixed profile-2 sample-domain SNR, dB', value: '12.0'}
   states: {coordinate: [1420, 110], rotation: 0, state: enabled}
+- name: moderate_snr_db
+  id: variable
+  parameters: {comment: 'Fixed profile-3 sample-domain SNR, dB', value: '5.0'}
+  states: {coordinate: [1650, 110], rotation: 0, state: enabled}
+- name: awgn_seed
+  id: variable
+  parameters: {comment: 'Fixed seed for reproducible complex Gaussian noise', value: '42'}
+  states: {coordinate: [1880, 110], rotation: 0, state: enabled}
 - name: ground_dish_diameter_m
   id: variable
   parameters: {comment: 'Representative academic ground dish diameter, m', value: '2.4'}
-  states: {coordinate: [1650, 110], rotation: 0, state: enabled}
+  states: {coordinate: [2110, 110], rotation: 0, state: enabled}
 - name: ground_noise_figure_db
   id: variable
   parameters: {comment: 'Representative academic receiver noise figure, dB', value: '1.0'}
-  states: {coordinate: [1880, 110], rotation: 0, state: enabled}
+  states: {coordinate: [2340, 110], rotation: 0, state: enabled}
 
 - name: image_width
   id: variable
@@ -166,7 +174,7 @@ blocks:
   states: {coordinate: [2110, 220], rotation: 0, state: enabled}
 - name: grleo_noise_rms
   id: variable
-  parameters: {comment: 'RMS noise amplitude for this installed gr-leo kTB implementation', value: '(1000 * 1.38e-23 * ground_noise_temperature_k * occupied_bandwidth * 10**(ground_noise_figure_db / 10))**0.5'}
+  parameters: {comment: 'Seeded profile-4 kTB complex-noise amplitude', value: '(1000 * 1.38e-23 * ground_noise_temperature_k * occupied_bandwidth * 10**(ground_noise_figure_db / 10))**0.5'}
   states: {coordinate: [2800, 220], rotation: 0, state: enabled}
 - name: full_link_voltage_scale
   id: variable
@@ -174,8 +182,16 @@ blocks:
   states: {coordinate: [3030, 220], rotation: 0, state: enabled}
 - name: tx_amplitude
   id: variable
-  parameters: {comment: 'Profile-dependent physical voltage scale', value: 'grleo_noise_rms * 10**(noise_test_snr_db / 20) if channel_profile == 2 else (full_link_voltage_scale if channel_profile == 3 else 1.0)'}
+  parameters: {comment: 'Profile-4 physical voltage scale; normalized otherwise', value: 'full_link_voltage_scale if channel_profile == 4 else 1.0'}
   states: {coordinate: [3260, 220], rotation: 0, state: enabled}
+- name: nominal_sample_power
+  id: variable
+  parameters: {comment: 'Expected normalized TX power after interpolation and x0.5 amplitude control', value: '0.25 * sum(tap * tap for tap in rrc_taps) / samples_per_symbol'}
+  states: {coordinate: [3490, 220], rotation: 0, state: enabled}
+- name: awgn_noise_amplitude
+  id: variable
+  parameters: {comment: '0 clean/Doppler; fixed sample-SNR AWGN; seeded kTB for profile 4', value: '0.0 if channel_profile < 2 else ((nominal_sample_power / 10**((mild_snr_db if channel_profile == 2 else moderate_snr_db) / 10))**0.5 if channel_profile in (2, 3) else grleo_noise_rms)'}
+  states: {coordinate: [3720, 220], rotation: 0, state: enabled}
 
 - name: note_derived_modem
   id: note
@@ -188,7 +204,7 @@ blocks:
 
 - name: channel_fspl
   id: variable
-  parameters: {comment: 'gr-leo: 0 none, 5 enabled', value: 5 if channel_profile == 3 else 0}
+  parameters: {comment: 'gr-leo: 0 none, 5 enabled', value: 5 if channel_profile == 4 else 0}
   states: {coordinate: [2800, 110], rotation: 0, state: enabled}
 - name: channel_doppler
   id: variable
@@ -196,19 +212,19 @@ blocks:
   states: {coordinate: [3030, 110], rotation: 0, state: enabled}
 - name: channel_pointing
   id: variable
-  parameters: {comment: 'gr-leo: 0 none, 6 enabled', value: 6 if channel_profile == 3 else 0}
+  parameters: {comment: 'gr-leo: 0 none, 6 enabled', value: 6 if channel_profile == 4 else 0}
   states: {coordinate: [3260, 110], rotation: 0, state: enabled}
 - name: channel_atmosphere
   id: variable
-  parameters: {comment: 'gr-leo: 0 none, 1 ITU', value: 1 if channel_profile == 3 else 0}
+  parameters: {comment: 'gr-leo: 0 none, 1 ITU', value: 1 if channel_profile == 4 else 0}
   states: {coordinate: [3490, 110], rotation: 0, state: enabled}
 - name: channel_rain
   id: variable
-  parameters: {comment: 'gr-leo: 0 none, 4 local rainfall rate', value: 4 if channel_profile == 3 else 0}
+  parameters: {comment: 'gr-leo: 0 none, 4 local rainfall rate', value: 4 if channel_profile == 4 else 0}
   states: {coordinate: [3720, 110], rotation: 0, state: enabled}
 - name: channel_noise
   id: variable
-  parameters: {comment: 'gr-leo: 0 none, 1 Gaussian link noise', value: 1 if channel_profile >= 2 else 0}
+  parameters: {comment: 'gr-leo internal noise disabled; seeded AWGN is added explicitly', value: '0'}
   states: {coordinate: [3950, 110], rotation: 0, state: enabled}
 
 - name: qpsk_constellation
@@ -381,6 +397,14 @@ blocks:
   id: leo_channel_model
   parameters: {filename: results/channel_log.csv, model: leo_model, noise_type: channel_noise, sample_rate: sample_rate, store_csv: '1'}
   states: {coordinate: [2100, 820], rotation: 0, state: enabled}
+- name: deterministic_awgn
+  id: analog_noise_source_x
+  parameters: {amp: awgn_noise_amplitude, noise_type: analog.GR_GAUSSIAN, seed: awgn_seed, type: complex}
+  states: {coordinate: [2140, 1040], rotation: 0, state: enabled}
+- name: channel_plus_awgn
+  id: blocks_add_xx
+  parameters: {num_inputs: '2', type: complex, vlen: '1'}
+  states: {coordinate: [2300, 820], rotation: 0, state: enabled}
 - name: receiver_agc
   id: analog_agc_xx
   parameters: {gain: '1.0', max_gain: 1e12, rate: 1e-4, reference: '1.0', type: complex}
@@ -452,8 +476,10 @@ connections:
 - [transmit_rrc, '0', amplitude_control, '0']
 - [amplitude_control, '0', simulation_throttle, '0']
 - [simulation_throttle, '0', leo_channel, '0']
-- [leo_channel, '0', receiver_agc, '0']
-- [leo_channel, '0', received_spectrum_display, '0']
+- [leo_channel, '0', channel_plus_awgn, '0']
+- [deterministic_awgn, '0', channel_plus_awgn, '1']
+- [channel_plus_awgn, '0', receiver_agc, '0']
+- [channel_plus_awgn, '0', received_spectrum_display, '0']
 - [receiver_agc, '0', matched_rrc, '0']
 - [matched_rrc, '0', coarse_fll, '0']
 - [coarse_fll, '0', gardner_symbol_sync, '0']

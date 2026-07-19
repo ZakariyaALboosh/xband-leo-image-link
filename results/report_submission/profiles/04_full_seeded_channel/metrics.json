@@ -1,0 +1,16 @@
+{
+  "total_transmitted_payload_bits": 25165824,
+  "total_received_comparable_bits": 20152320,
+  "bit_errors": 10076689,
+  "ber": 0.5000262500793953,
+  "byte_errors": 2509260,
+  "byte_error_rate": 0.996117568597561,
+  "pixels_with_error": 839680,
+  "pixel_error_rate": 1.0,
+  "mean_absolute_pixel_error": 74.12230135289634,
+  "psnr_db": 9.068442088558337,
+  "transmitted_sha256": "230db23a35f5b7bc79d2861a5698a19a7df99d94b90f9e9f1f15ce051d9b2c4d",
+  "received_sha256": "incomplete",
+  "exact_file_match": false,
+  "received_bytes_available": 2519040
+}

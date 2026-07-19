@@ -1,0 +1,158 @@
+{
+  "project": "NOAA-20-Inspired X-Band Image Link Simulation",
+  "rate_mode": "full",
+  "rate_scale": 1.0,
+  "reference_information_rate": 15000000.0,
+  "code_rate": 0.5,
+  "bits_per_symbol": 2,
+  "samples_per_symbol": 2,
+  "rolloff": 0.35,
+  "carrier_frequency_hz": 7812000000.0,
+  "rates": {
+    "information_rate": 15000000.0,
+    "coded_bit_rate": 30000000.0,
+    "symbol_rate": 15000000.0,
+    "sample_rate": 30000000.0,
+    "occupied_bandwidth": 20250000.0
+  },
+  "convolutional_code": {
+    "rate": "1/2",
+    "constraint_length": 7,
+    "generator_polynomials_octal": [
+      "171",
+      "133"
+    ],
+    "gr_polynomials_decimal_bit_reversed": [
+      109,
+      79
+    ],
+    "mode": "terminated",
+    "frame_payload_bytes": 1024
+  },
+  "frame_milestone": "A",
+  "frame_format_milestone_b": {
+    "byte_order": "big-endian",
+    "access_code_hex": "1ACFFC1D",
+    "sequence_number_bits": 32,
+    "payload_length_bits": 32,
+    "payload_bytes": 1024,
+    "crc_bits": 32
+  },
+  "tle": {
+    "name": "NOAA 20 / JPSS-1",
+    "norad_catalogue_id": 43013,
+    "line1": "1 43013U 17073A   26198.87431143  .00000023  00000-0  32041-4 0  9995",
+    "line2": "2 43013  98.7772 138.0652 0001490 121.5711 238.5610 14.19516763448824"
+  },
+  "ground_station": {
+    "name": "Zawiya, Libya (approximate)",
+    "latitude_deg": 32.75,
+    "longitude_deg": 12.73,
+    "altitude_m": 20.0,
+    "altitude_note": "Representative simulation assumption above mean sea level"
+  },
+  "representative_link_assumptions": {
+    "satellite_tx_antenna": "custom, 5 dBiC, 60 degree beamwidth, zero pointing error",
+    "ground_rx_antenna": "2.4 m parabolic reflector, 55 percent aperture efficiency",
+    "ground_receiver_noise_figure_db": 1.0,
+    "ground_receiver_noise_temperature_k": 290.0,
+    "satellite_tx_power_dbm": 30.0
+  },
+  "grc_defaults": {
+    "channel_profile": 4,
+    "receiver_path": 1,
+    "training_frames": 4,
+    "sync_coded_bit_skip": 64,
+    "mild_snr_db": 12.0,
+    "moderate_snr_db": 5.0,
+    "awgn_seed": 42
+  },
+  "validated_environment": {
+    "platform": "Linux test workspace; project targets Windows Radioconda",
+    "gnu_radio": "3.10.12.0",
+    "gnuradio_leo": "1.0.0.post20250214+g8f62b92",
+    "python_import": "from gnuradio import leo"
+  },
+  "validation_results": {
+    "clean_sync_ber": 0.0,
+    "clean_exact_rgb_match": true,
+    "doppler_only_unsynchronized_ber": 0.3638140360514323,
+    "doppler_only_synchronized_ber": 0.0,
+    "doppler_logged_min_hz": 4830.73,
+    "doppler_logged_max_hz": 6545.51,
+    "full_representative_unscaled_ber": 0.5,
+    "simple_clean_reduced_ber": 0.0,
+    "simple_clean_reduced_exact_rgb_match": true,
+    "simple_clean_full_rate_ber": 0.0,
+    "simple_clean_full_rate_exact_rgb_match": true,
+    "simple_doppler_full_rate_ber": 0.0,
+    "simple_doppler_logged_min_hz": 6377.4,
+    "simple_doppler_logged_max_hz": 6545.51,
+    "simple_earth_observation_1024_full_rate_ber": 0.0,
+    "simple_earth_observation_1024_exact_rgb_match": true,
+    "constellation_modulator_candidate_ber": 0.48873138427734375,
+    "constellation_receiver_candidate_ber": 0.3798065185546875
+  },
+  "tle_epoch_utc": "2026-07-17T20:59:00.507552Z",
+  "selected_pass": {
+    "observation_start_utc": "2026-07-18T00:55:40.507552Z",
+    "observation_end_utc": "2026-07-18T01:11:00.507552Z",
+    "maximum_elevation_deg": 86.203,
+    "maximum_elevation_time_utc": "2026-07-18T01:03:20.507552Z",
+    "simulation_start_utc": "2026-07-18T01:03:17.507552Z",
+    "simulation_end_utc": "2026-07-18T01:03:27.507552Z",
+    "tle": {
+      "name": "NOAA 20 / JPSS-1",
+      "norad_catalogue_id": 43013,
+      "line1": "1 43013U 17073A   26198.87431143  .00000023  00000-0  32041-4 0  9995",
+      "line2": "2 43013  98.7772 138.0652 0001490 121.5711 238.5610 14.19516763448824"
+    },
+    "ground_station": {
+      "name": "Zawiya, Libya (approximate)",
+      "latitude_deg": 32.75,
+      "longitude_deg": 12.73,
+      "altitude_m": 20.0,
+      "altitude_note": "Representative simulation assumption above mean sea level"
+    },
+    "tle_epoch_utc": "2026-07-17T20:59:00.507552Z"
+  },
+  "width": 1024,
+  "height": 1024,
+  "channels": 3,
+  "pixel_format": "RGB8",
+  "payload_bytes": 3145728,
+  "payload_bits": 25165824,
+  "bit_order": "MSB first",
+  "tx_rgb_sha256": "230db23a35f5b7bc79d2861a5698a19a7df99d94b90f9e9f1f15ce051d9b2c4d",
+  "normalized_source": "input/normalized_source.png",
+  "source_image": "input/earth_observation_libya_modis_20120417.jpg",
+  "earth_observation_demo": {
+    "local_file": "input/earth_observation_libya_modis_20120417.jpg",
+    "source_url": "https://eoimages.gsfc.nasa.gov/images/imagerecords/77000/77682/libya_tmo_2012108_lrg.jpg",
+    "attribution": "NASA Earth Observatory; Terra MODIS image by Jeff Schmaltz, LANCE/EOSDIS MODIS Rapid Response",
+    "width": 1024,
+    "height": 1024
+  },
+  "framing": {
+    "frame_payload_bytes": 1024,
+    "frame_bits": 8192,
+    "training_frames": 4,
+    "training_bits": 32768,
+    "payload_start_bit": 32768,
+    "payload_bits": 25165824,
+    "tail_bits": 32768,
+    "framed_bits": 25231360
+  },
+  "image_fit": "stretch",
+  "source_image_url": "https://eoimages.gsfc.nasa.gov/images/imagerecords/77000/77682/libya_tmo_2012108_lrg.jpg",
+  "source_image_page": "https://earthobservatory.nasa.gov/images/77682/dust-off-the-libya-coast",
+  "source_image_credit": "NASA Earth Observatory; Terra MODIS image by Jeff Schmaltz, LANCE/EOSDIS MODIS Rapid Response",
+  "deterministic_noise": {
+    "implementation": "GNU Radio analog complex Gaussian noise source plus complex adder",
+    "seed": 42,
+    "grleo_internal_noise": 0,
+    "mild_sample_snr_db": 12.0,
+    "moderate_sample_snr_db": 5.0,
+    "full_profile": "seeded kTB amplitude"
+  }
+}

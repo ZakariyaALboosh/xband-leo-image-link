@@ -1,0 +1,12 @@
+NOAA-20-Inspired X-Band Image Link Simulation
+
+Information rate:       15.000 Mbit/s
+QPSK symbol rate:       15.000 Msymbol/s
+Complex sample rate:    30.000 MS/s
+Carrier frequency:      7.812 GHz
+Convolutional code:     Rate 1/2, K=7
+Doppler model:          gr-leo orbital model
+Compared payload bits:  20,152,320
+Bit errors:             10,076,689
+BER:                    5.000e-01
+Exact RGB match:        No

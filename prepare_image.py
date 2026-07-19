@@ -26,13 +26,26 @@ def load_config() -> dict:
         raise RuntimeError(f"Cannot read {CONFIG}: {exc}") from exc
 
 
-def normalize_image(path: Path, size: tuple[int, int]) -> Image.Image:
+def normalize_image(path: Path, size: tuple[int, int], image_fit: str = "stretch") -> Image.Image:
     if not path.is_file() or path.stat().st_size == 0:
         raise ValueError(f"Input image is missing or empty: {path}")
     try:
         with Image.open(path) as source:
             source.load()
-            return source.convert("RGB").resize(size, Image.Resampling.LANCZOS)
+            rgb = source.convert("RGB")
+            if image_fit == "stretch":
+                return rgb.resize(size, Image.Resampling.LANCZOS)
+            if image_fit == "letterbox":
+                target_width, target_height = size
+                scale = min(target_width / rgb.width, target_height / rgb.height)
+                resized_width = max(1, round(rgb.width * scale))
+                resized_height = max(1, round(rgb.height * scale))
+                resized = rgb.resize((resized_width, resized_height), Image.Resampling.LANCZOS)
+                canvas = Image.new("RGB", size, "black")
+                offset = ((target_width - resized_width) // 2, (target_height - resized_height) // 2)
+                canvas.paste(resized, offset)
+                return canvas
+            raise ValueError(f"Unsupported image_fit {image_fit!r}; use 'stretch' or 'letterbox'")
     except (UnidentifiedImageError, OSError) as exc:
         raise ValueError(f"Unsupported or unreadable image {path}: {exc}") from exc
 
@@ -77,10 +90,11 @@ def main() -> None:
     width = int(config.get("width", 256))
     height = int(config.get("height", 256))
     channels = int(config.get("channels", 3))
+    image_fit = str(config.get("image_fit", "stretch"))
     if width <= 0 or height <= 0 or channels != 3:
         raise ValueError("Image dimensions must be positive and channels must equal 3 for RGB8")
 
-    image = normalize_image(input_path, (width, height))
+    image = normalize_image(input_path, (width, height), image_fit)
     payload = image.tobytes("raw", "RGB")
     expected_bytes = width * height * channels
     if len(payload) != expected_bytes:
@@ -100,6 +114,7 @@ def main() -> None:
             "height": height,
             "channels": channels,
             "pixel_format": "RGB8",
+            "image_fit": image_fit,
             "payload_bytes": len(payload),
             "payload_bits": len(payload) * 8,
             "bit_order": "MSB first",

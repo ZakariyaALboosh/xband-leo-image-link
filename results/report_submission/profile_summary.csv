@@ -1,0 +1,6 @@
+profile_number,profile_name,run_status,configured_sample_snr_db,noise_seed,ber,bit_errors,comparable_bits,payload_coverage,byte_errors,pixels_with_error,psnr_db,exact_match,decoded_bit_items,runtime_seconds
+0,Clean,complete,,42,0.0,0,25165824,1.0,0,0,Infinity,True,25223168,28.445933077018708
+1,Orbital Doppler only,complete,,42,0.0,0,25165824,1.0,0,0,Infinity,True,25223168,27.894130040018354
+2,Doppler plus mild seeded AWGN (12 dB),complete,12.0,42,0.0,0,25165824,1.0,0,0,Infinity,True,25223168,31.539343740034383
+3,Doppler plus moderate seeded AWGN (5 dB),complete,5.0,42,0.0,0,25165824,1.0,0,0,Infinity,True,25223168,29.693799801985733
+4,Full propagation plus seeded kTB noise,incomplete_decoded_stream,,42,0.5000262500793953,10076689,20152320,0.80078125,2509260,839680,9.068442088558337,False,20185088,57.28948032599874

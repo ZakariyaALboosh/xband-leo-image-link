@@ -63,7 +63,9 @@
     "receiver_path": 1,
     "training_frames": 4,
     "sync_coded_bit_skip": 64,
-    "noise_test_snr_db": 30.0
+    "mild_snr_db": 12.0,
+    "moderate_snr_db": 5.0,
+    "awgn_seed": 42
   },
   "validated_environment": {
     "platform": "Linux test workspace; project targets Windows Radioconda",
@@ -140,5 +142,6 @@
     "payload_bits": 1572864,
     "tail_bits": 32768,
     "framed_bits": 1638400
-  }
+  },
+  "image_fit": "stretch"
 }

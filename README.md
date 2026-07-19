@@ -190,10 +190,13 @@ Channel profiles are selected by the visible `channel_profile` variable:
 |---:|---|
 | 0 | Clean; all propagation impairments and noise disabled |
 | 1 | Orbital Doppler only |
-| 2 | Doppler and gr-leo Gaussian link noise |
-| 3 | Doppler, FSPL, gas, rain, pointing loss, and noise |
+| 2 | Doppler and fixed 12 dB sample-domain AWGN |
+| 3 | Doppler and fixed 5 dB sample-domain AWGN |
+| 4 | Doppler, FSPL, gas, rain, pointing loss, and seeded kTB noise |
 
-The installed Link Margin option calculates a logged diagnostic from transmit power, antenna gains, loss, and noise floor. Source inspection confirms it does not rescale the complex stream. The visible `full_link_voltage_scale` represents the assumed TX power and antenna voltage terms for profile 3.
+The installed Link Margin option calculates a logged diagnostic from transmit power, antenna gains, loss, and noise floor. Source inspection confirms it does not rescale the complex stream. The visible `full_link_voltage_scale` represents the assumed TX power and antenna voltage terms for profile 4.
+
+The gr-leo internal noise enumeration is disabled for reproducibility. Profiles 2–4 instead use a visible GNU Radio complex Gaussian source after the gr-leo channel, with fixed seed 42. Profiles 2 and 3 derive amplitude from the expected transmit-filter sample power and their fixed configured SNR. Profile 4 uses the representative kTB bandwidth, temperature, and noise-figure amplitude. Configured sample-domain SNR is not presented as a measured receiver Eb/N0.
 
 This gr-leo version logs time, slant range, elevation, path loss, atmospheric loss, rainfall loss, pointing loss, Doppler shift, and link margin. It does not log range rate.
 
@@ -244,7 +247,7 @@ Run artifacts are preserved under `results/baseline`, `results/simple_clean_redu
 ## Limitations
 
 - The finite synchronized output loses one terminated tail frame; the protected image payload is complete and hash-verifiable.
-- Noise-sweep image triplets and profile 3 were not rerun for this simplification and are not claimed as newly validated.
+- Fixed seeded-noise report runs and their deterministic regression are preserved separately under `results/report_submission` when the report suite is executed.
 - The model is a raw RGB physical-layer demonstration, not a complete link budget or hardware implementation.
 - It contains no FPGA, digital downconversion, channel decimation, packet headers, CRC, Reed–Solomon, CCSDS, JPSS packetization, or operational NOAA-20 decoding.
 - The frozen TLE and representative antennas provide reproducibility, not a claim about a current pass or official NOAA-20 hardware.

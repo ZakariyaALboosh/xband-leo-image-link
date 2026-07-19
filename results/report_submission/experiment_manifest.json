@@ -1,0 +1,655 @@
+{
+  "suite": "Fixed seeded-noise 1024x1024 GNU Radio report run",
+  "started_utc": "2026-07-19T15:37:05.754211Z",
+  "completed_utc": "2026-07-19T15:41:42.804896Z",
+  "git_commit": "025a872e7d819b499159c1b81c964dfdfa4f0880",
+  "environment": {
+    "python": "3.13.14",
+    "gnu_radio": "3.10.12.0",
+    "gnuradio_leo": "1.0.0.post20250214+g8f62b92",
+    "pillow": "12.3.0",
+    "numpy": "2.5.1",
+    "matplotlib": "3.11.0",
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.39",
+    "qt_platform": "offscreen"
+  },
+  "source": {
+    "title": "Dust off the Libya coast",
+    "original_dimensions": [
+      2800,
+      3600
+    ],
+    "source_page": "https://earthobservatory.nasa.gov/images/77682/dust-off-the-libya-coast",
+    "download_url": "https://eoimages.gsfc.nasa.gov/images/imagerecords/77000/77682/libya_tmo_2012108_lrg.jpg",
+    "sha256": "d1ec44633fef30347ed9b91fe47ffd7d9e52bc0457f2c11c126c494c9876f2f4",
+    "credit": "NASA Earth Observatory; Terra MODIS image by Jeff Schmaltz, LANCE/EOSDIS MODIS Rapid Response"
+  },
+  "payload": {
+    "width": 1024,
+    "height": 1024,
+    "channels": 3,
+    "format": "RGB8",
+    "bits": 25165824,
+    "image_fit": "stretch",
+    "payload_whitening": false
+  },
+  "rates": {
+    "information_bit_s": 15000000,
+    "coded_bit_s": 30000000,
+    "symbol_s": 15000000,
+    "sample_s": 30000000
+  },
+  "noise": {
+    "implementation": "seeded complex Gaussian source after gr-leo",
+    "seed": 42,
+    "mild_sample_snr_db": 12.0,
+    "moderate_sample_snr_db": 5.0,
+    "grleo_internal_noise": 0,
+    "full_profile": "seeded kTB amplitude"
+  },
+  "tle": {
+    "name": "NOAA 20 / JPSS-1",
+    "norad_catalogue_id": 43013,
+    "line1": "1 43013U 17073A   26198.87431143  .00000023  00000-0  32041-4 0  9995",
+    "line2": "2 43013  98.7772 138.0652 0001490 121.5711 238.5610 14.19516763448824"
+  },
+  "ground_station": {
+    "name": "Zawiya, Libya (approximate)",
+    "latitude_deg": 32.75,
+    "longitude_deg": 12.73,
+    "altitude_m": 20.0,
+    "altitude_note": "Representative simulation assumption above mean sea level"
+  },
+  "representative_link_assumptions": {
+    "satellite_tx_antenna": "custom, 5 dBiC, 60 degree beamwidth, zero pointing error",
+    "ground_rx_antenna": "2.4 m parabolic reflector, 55 percent aperture efficiency",
+    "ground_receiver_noise_figure_db": 1.0,
+    "ground_receiver_noise_temperature_k": 290.0,
+    "satellite_tx_power_dbm": 30.0
+  },
+  "selected_pass": {
+    "observation_start_utc": "2026-07-18T00:55:40.507552Z",
+    "observation_end_utc": "2026-07-18T01:11:00.507552Z",
+    "maximum_elevation_deg": 86.203,
+    "maximum_elevation_time_utc": "2026-07-18T01:03:20.507552Z",
+    "simulation_start_utc": "2026-07-18T01:03:17.507552Z",
+    "simulation_end_utc": "2026-07-18T01:03:27.507552Z",
+    "tle": {
+      "name": "NOAA 20 / JPSS-1",
+      "norad_catalogue_id": 43013,
+      "line1": "1 43013U 17073A   26198.87431143  .00000023  00000-0  32041-4 0  9995",
+      "line2": "2 43013  98.7772 138.0652 0001490 121.5711 238.5610 14.19516763448824"
+    },
+    "ground_station": {
+      "name": "Zawiya, Libya (approximate)",
+      "latitude_deg": 32.75,
+      "longitude_deg": 12.73,
+      "altitude_m": 20.0,
+      "altitude_note": "Representative simulation assumption above mean sea level"
+    },
+    "tle_epoch_utc": "2026-07-17T20:59:00.507552Z"
+  },
+  "profiles": [
+    {
+      "number": 0,
+      "name": "Clean",
+      "folder": "profiles/00_clean"
+    },
+    {
+      "number": 1,
+      "name": "Orbital Doppler only",
+      "folder": "profiles/01_doppler"
+    },
+    {
+      "number": 2,
+      "name": "Doppler plus mild seeded AWGN (12 dB)",
+      "folder": "profiles/02_doppler_mild_awgn"
+    },
+    {
+      "number": 3,
+      "name": "Doppler plus moderate seeded AWGN (5 dB)",
+      "folder": "profiles/03_doppler_moderate_awgn"
+    },
+    {
+      "number": 4,
+      "name": "Full propagation plus seeded kTB noise",
+      "folder": "profiles/04_full_seeded_channel"
+    }
+  ],
+  "determinism_validation": {
+    "passed": true,
+    "seed": 42,
+    "decoded_sha256": "687e609478620467b69fe8e81533cf128f6f58dcc92e9d3d3d3e6acdd123f67b",
+    "metrics_identical": true
+  },
+  "commands": [
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "prepare_image.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:05.775260Z",
+      "runtime_seconds": 0.6724178490112536,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_a/prepare_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/grcc",
+        "-o",
+        "/root/xband_image_link",
+        "/root/xband_image_link/results/report_submission.in_progress/validation/seeded_determinism/run_a/xband_leo_image_link_simple.grc"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:06.452272Z",
+      "runtime_seconds": 2.326453926973045,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_a/grcc.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-c",
+        "import json; import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); print('INSTANTIATED='+json.dumps({'rate_scale':tb.rate_scale,'channel_profile':tb.channel_profile,'mild_snr_db':tb.mild_snr_db,'moderate_snr_db':tb.moderate_snr_db,'awgn_seed':tb.awgn_seed,'information_rate':tb.information_rate,'coded_bit_rate':tb.coded_bit_rate,'symbol_rate':tb.symbol_rate,'sample_rate':tb.sample_rate,'image_width':tb.image_width,'image_height':tb.image_height,'channel_doppler':tb.channel_doppler,'channel_fspl':tb.channel_fspl,'channel_atmosphere':tb.channel_atmosphere,'channel_rain':tb.channel_rain,'channel_pointing':tb.channel_pointing,'channel_noise':tb.channel_noise,'nominal_sample_power':tb.nominal_sample_power,'awgn_noise_amplitude':tb.awgn_noise_amplitude,'rrc_taps_energy':sum(x*x for x in tb.rrc_taps)})); tb.stop(); tb.wait()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:08.779791Z",
+      "runtime_seconds": 1.9908771429909393,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_a/instantiated_parameters.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-u",
+        "-c",
+        "import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); tb.start(); tb.wait(); tb.stop()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:10.772144Z",
+      "runtime_seconds": 3.580137063981965,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_a/flowgraph_console.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "reconstruct_image.py",
+        "--source",
+        "decoded"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:14.353166Z",
+      "runtime_seconds": 0.40174170304089785,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_a/reconstruct_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "calculate_results.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:14.755587Z",
+      "runtime_seconds": 0.3230419300380163,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_a/calculate_results.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "prepare_image.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:15.111585Z",
+      "runtime_seconds": 0.528433550032787,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_b/prepare_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/grcc",
+        "-o",
+        "/root/xband_image_link",
+        "/root/xband_image_link/results/report_submission.in_progress/validation/seeded_determinism/run_b/xband_leo_image_link_simple.grc"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:15.641504Z",
+      "runtime_seconds": 2.2347685690037906,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_b/grcc.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-c",
+        "import json; import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); print('INSTANTIATED='+json.dumps({'rate_scale':tb.rate_scale,'channel_profile':tb.channel_profile,'mild_snr_db':tb.mild_snr_db,'moderate_snr_db':tb.moderate_snr_db,'awgn_seed':tb.awgn_seed,'information_rate':tb.information_rate,'coded_bit_rate':tb.coded_bit_rate,'symbol_rate':tb.symbol_rate,'sample_rate':tb.sample_rate,'image_width':tb.image_width,'image_height':tb.image_height,'channel_doppler':tb.channel_doppler,'channel_fspl':tb.channel_fspl,'channel_atmosphere':tb.channel_atmosphere,'channel_rain':tb.channel_rain,'channel_pointing':tb.channel_pointing,'channel_noise':tb.channel_noise,'nominal_sample_power':tb.nominal_sample_power,'awgn_noise_amplitude':tb.awgn_noise_amplitude,'rrc_taps_energy':sum(x*x for x in tb.rrc_taps)})); tb.stop(); tb.wait()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:17.877383Z",
+      "runtime_seconds": 2.1068512109923176,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_b/instantiated_parameters.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-u",
+        "-c",
+        "import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); tb.start(); tb.wait(); tb.stop()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:19.985820Z",
+      "runtime_seconds": 3.839137596951332,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_b/flowgraph_console.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "reconstruct_image.py",
+        "--source",
+        "decoded"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:23.825922Z",
+      "runtime_seconds": 0.43985380500089377,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_b/reconstruct_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "calculate_results.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:24.266325Z",
+      "runtime_seconds": 0.3512923420057632,
+      "return_code": 0,
+      "log": "validation/seeded_determinism/run_b/calculate_results.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "prepare_image.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:24.671635Z",
+      "runtime_seconds": 1.9074019790277816,
+      "return_code": 0,
+      "log": "profiles/00_clean/prepare_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/grcc",
+        "-o",
+        "/root/xband_image_link",
+        "/root/xband_image_link/results/report_submission.in_progress/profiles/00_clean/xband_leo_image_link_simple.grc"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:26.580707Z",
+      "runtime_seconds": 2.3167715919553302,
+      "return_code": 0,
+      "log": "profiles/00_clean/grcc.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-c",
+        "import json; import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); print('INSTANTIATED='+json.dumps({'rate_scale':tb.rate_scale,'channel_profile':tb.channel_profile,'mild_snr_db':tb.mild_snr_db,'moderate_snr_db':tb.moderate_snr_db,'awgn_seed':tb.awgn_seed,'information_rate':tb.information_rate,'coded_bit_rate':tb.coded_bit_rate,'symbol_rate':tb.symbol_rate,'sample_rate':tb.sample_rate,'image_width':tb.image_width,'image_height':tb.image_height,'channel_doppler':tb.channel_doppler,'channel_fspl':tb.channel_fspl,'channel_atmosphere':tb.channel_atmosphere,'channel_rain':tb.channel_rain,'channel_pointing':tb.channel_pointing,'channel_noise':tb.channel_noise,'nominal_sample_power':tb.nominal_sample_power,'awgn_noise_amplitude':tb.awgn_noise_amplitude,'rrc_taps_energy':sum(x*x for x in tb.rrc_taps)})); tb.stop(); tb.wait()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:28.898535Z",
+      "runtime_seconds": 2.0793489740462974,
+      "return_code": 0,
+      "log": "profiles/00_clean/instantiated_parameters.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-u",
+        "-c",
+        "import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); tb.start(); tb.wait(); tb.stop()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:30.980099Z",
+      "runtime_seconds": 28.44493053201586,
+      "return_code": 0,
+      "log": "profiles/00_clean/flowgraph_console.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "reconstruct_image.py",
+        "--source",
+        "decoded"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:37:59.426421Z",
+      "runtime_seconds": 1.198348825040739,
+      "return_code": 0,
+      "log": "profiles/00_clean/reconstruct_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "calculate_results.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:00.625470Z",
+      "runtime_seconds": 1.6045725970179774,
+      "return_code": 0,
+      "log": "profiles/00_clean/calculate_results.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "prepare_image.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:02.651236Z",
+      "runtime_seconds": 1.7373233600519598,
+      "return_code": 0,
+      "log": "profiles/01_doppler/prepare_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/grcc",
+        "-o",
+        "/root/xband_image_link",
+        "/root/xband_image_link/results/report_submission.in_progress/profiles/01_doppler/xband_leo_image_link_simple.grc"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:04.391044Z",
+      "runtime_seconds": 2.605156015022658,
+      "return_code": 0,
+      "log": "profiles/01_doppler/grcc.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-c",
+        "import json; import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); print('INSTANTIATED='+json.dumps({'rate_scale':tb.rate_scale,'channel_profile':tb.channel_profile,'mild_snr_db':tb.mild_snr_db,'moderate_snr_db':tb.moderate_snr_db,'awgn_seed':tb.awgn_seed,'information_rate':tb.information_rate,'coded_bit_rate':tb.coded_bit_rate,'symbol_rate':tb.symbol_rate,'sample_rate':tb.sample_rate,'image_width':tb.image_width,'image_height':tb.image_height,'channel_doppler':tb.channel_doppler,'channel_fspl':tb.channel_fspl,'channel_atmosphere':tb.channel_atmosphere,'channel_rain':tb.channel_rain,'channel_pointing':tb.channel_pointing,'channel_noise':tb.channel_noise,'nominal_sample_power':tb.nominal_sample_power,'awgn_noise_amplitude':tb.awgn_noise_amplitude,'rrc_taps_energy':sum(x*x for x in tb.rrc_taps)})); tb.stop(); tb.wait()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:06.997371Z",
+      "runtime_seconds": 2.0994055119808763,
+      "return_code": 0,
+      "log": "profiles/01_doppler/instantiated_parameters.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-u",
+        "-c",
+        "import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); tb.start(); tb.wait(); tb.stop()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:09.101140Z",
+      "runtime_seconds": 27.893525923020206,
+      "return_code": 0,
+      "log": "profiles/01_doppler/flowgraph_console.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "reconstruct_image.py",
+        "--source",
+        "decoded"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:36.995579Z",
+      "runtime_seconds": 1.1006043590023182,
+      "return_code": 0,
+      "log": "profiles/01_doppler/reconstruct_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "calculate_results.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:38.096858Z",
+      "runtime_seconds": 1.6740247959969565,
+      "return_code": 0,
+      "log": "profiles/01_doppler/calculate_results.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "prepare_image.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:40.151960Z",
+      "runtime_seconds": 1.6481202529976144,
+      "return_code": 0,
+      "log": "profiles/02_doppler_mild_awgn/prepare_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/grcc",
+        "-o",
+        "/root/xband_image_link",
+        "/root/xband_image_link/results/report_submission.in_progress/profiles/02_doppler_mild_awgn/xband_leo_image_link_simple.grc"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:41.801425Z",
+      "runtime_seconds": 2.797641702054534,
+      "return_code": 0,
+      "log": "profiles/02_doppler_mild_awgn/grcc.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-c",
+        "import json; import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); print('INSTANTIATED='+json.dumps({'rate_scale':tb.rate_scale,'channel_profile':tb.channel_profile,'mild_snr_db':tb.mild_snr_db,'moderate_snr_db':tb.moderate_snr_db,'awgn_seed':tb.awgn_seed,'information_rate':tb.information_rate,'coded_bit_rate':tb.coded_bit_rate,'symbol_rate':tb.symbol_rate,'sample_rate':tb.sample_rate,'image_width':tb.image_width,'image_height':tb.image_height,'channel_doppler':tb.channel_doppler,'channel_fspl':tb.channel_fspl,'channel_atmosphere':tb.channel_atmosphere,'channel_rain':tb.channel_rain,'channel_pointing':tb.channel_pointing,'channel_noise':tb.channel_noise,'nominal_sample_power':tb.nominal_sample_power,'awgn_noise_amplitude':tb.awgn_noise_amplitude,'rrc_taps_energy':sum(x*x for x in tb.rrc_taps)})); tb.stop(); tb.wait()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:44.600376Z",
+      "runtime_seconds": 2.1965160759864375,
+      "return_code": 0,
+      "log": "profiles/02_doppler_mild_awgn/instantiated_parameters.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-u",
+        "-c",
+        "import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); tb.start(); tb.wait(); tb.stop()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:38:46.800820Z",
+      "runtime_seconds": 31.538705401995685,
+      "return_code": 0,
+      "log": "profiles/02_doppler_mild_awgn/flowgraph_console.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "reconstruct_image.py",
+        "--source",
+        "decoded"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:39:18.340553Z",
+      "runtime_seconds": 1.1830595289939083,
+      "return_code": 0,
+      "log": "profiles/02_doppler_mild_awgn/reconstruct_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "calculate_results.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:39:19.524285Z",
+      "runtime_seconds": 1.5374663099646568,
+      "return_code": 0,
+      "log": "profiles/02_doppler_mild_awgn/calculate_results.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "prepare_image.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:39:21.501013Z",
+      "runtime_seconds": 1.6323126970091835,
+      "return_code": 0,
+      "log": "profiles/03_doppler_moderate_awgn/prepare_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/grcc",
+        "-o",
+        "/root/xband_image_link",
+        "/root/xband_image_link/results/report_submission.in_progress/profiles/03_doppler_moderate_awgn/xband_leo_image_link_simple.grc"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:39:23.135134Z",
+      "runtime_seconds": 2.558165219030343,
+      "return_code": 0,
+      "log": "profiles/03_doppler_moderate_awgn/grcc.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-c",
+        "import json; import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); print('INSTANTIATED='+json.dumps({'rate_scale':tb.rate_scale,'channel_profile':tb.channel_profile,'mild_snr_db':tb.mild_snr_db,'moderate_snr_db':tb.moderate_snr_db,'awgn_seed':tb.awgn_seed,'information_rate':tb.information_rate,'coded_bit_rate':tb.coded_bit_rate,'symbol_rate':tb.symbol_rate,'sample_rate':tb.sample_rate,'image_width':tb.image_width,'image_height':tb.image_height,'channel_doppler':tb.channel_doppler,'channel_fspl':tb.channel_fspl,'channel_atmosphere':tb.channel_atmosphere,'channel_rain':tb.channel_rain,'channel_pointing':tb.channel_pointing,'channel_noise':tb.channel_noise,'nominal_sample_power':tb.nominal_sample_power,'awgn_noise_amplitude':tb.awgn_noise_amplitude,'rrc_taps_energy':sum(x*x for x in tb.rrc_taps)})); tb.stop(); tb.wait()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:39:25.695952Z",
+      "runtime_seconds": 2.3123556819627993,
+      "return_code": 0,
+      "log": "profiles/03_doppler_moderate_awgn/instantiated_parameters.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-u",
+        "-c",
+        "import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); tb.start(); tb.wait(); tb.stop()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:39:28.012839Z",
+      "runtime_seconds": 29.693170593993273,
+      "return_code": 0,
+      "log": "profiles/03_doppler_moderate_awgn/flowgraph_console.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "reconstruct_image.py",
+        "--source",
+        "decoded"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:39:57.707012Z",
+      "runtime_seconds": 1.116011778009124,
+      "return_code": 0,
+      "log": "profiles/03_doppler_moderate_awgn/reconstruct_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "calculate_results.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:39:58.823599Z",
+      "runtime_seconds": 1.5376732499571517,
+      "return_code": 0,
+      "log": "profiles/03_doppler_moderate_awgn/calculate_results.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "prepare_image.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:40:00.791570Z",
+      "runtime_seconds": 2.0612806970020756,
+      "return_code": 0,
+      "log": "profiles/04_full_seeded_channel/prepare_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/grcc",
+        "-o",
+        "/root/xband_image_link",
+        "/root/xband_image_link/results/report_submission.in_progress/profiles/04_full_seeded_channel/xband_leo_image_link_simple.grc"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:40:02.854991Z",
+      "runtime_seconds": 3.2666033119894564,
+      "return_code": 0,
+      "log": "profiles/04_full_seeded_channel/grcc.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-c",
+        "import json; import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); print('INSTANTIATED='+json.dumps({'rate_scale':tb.rate_scale,'channel_profile':tb.channel_profile,'mild_snr_db':tb.mild_snr_db,'moderate_snr_db':tb.moderate_snr_db,'awgn_seed':tb.awgn_seed,'information_rate':tb.information_rate,'coded_bit_rate':tb.coded_bit_rate,'symbol_rate':tb.symbol_rate,'sample_rate':tb.sample_rate,'image_width':tb.image_width,'image_height':tb.image_height,'channel_doppler':tb.channel_doppler,'channel_fspl':tb.channel_fspl,'channel_atmosphere':tb.channel_atmosphere,'channel_rain':tb.channel_rain,'channel_pointing':tb.channel_pointing,'channel_noise':tb.channel_noise,'nominal_sample_power':tb.nominal_sample_power,'awgn_noise_amplitude':tb.awgn_noise_amplitude,'rrc_taps_energy':sum(x*x for x in tb.rrc_taps)})); tb.stop(); tb.wait()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:40:06.125178Z",
+      "runtime_seconds": 2.6277638059691526,
+      "return_code": 0,
+      "log": "profiles/04_full_seeded_channel/instantiated_parameters.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "-u",
+        "-c",
+        "import xband_leo_image_link_simple as m; app=m.Qt.QApplication([]); tb=m.xband_leo_image_link_simple(); tb.start(); tb.wait(); tb.stop()"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:40:08.758114Z",
+      "runtime_seconds": 57.28883631998906,
+      "return_code": 0,
+      "log": "profiles/04_full_seeded_channel/flowgraph_console.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "calculate_results.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:41:07.208962Z",
+      "runtime_seconds": 1.4211215139948763,
+      "return_code": 0,
+      "log": "profiles/04_full_seeded_channel/calculate_results.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/python",
+        "prepare_image.py"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:41:40.266541Z",
+      "runtime_seconds": 0.2926256339997053,
+      "return_code": 0,
+      "log": "restore_prepare_image.log"
+    },
+    {
+      "command": [
+        "/root/radioconda/bin/grcc",
+        "-o",
+        "/root/xband_image_link",
+        "/root/xband_image_link/xband_leo_image_link_simple.grc"
+      ],
+      "working_directory": "/root/xband_image_link",
+      "started_utc": "2026-07-19T15:41:40.559767Z",
+      "runtime_seconds": 2.2438744279788807,
+      "return_code": 0,
+      "log": "restore_grcc.log"
+    }
+  ],
+  "graph_hashes": {
+    "simple_source_sha256": "bc6b35e10ee14b2d54ee73d24d4c7a32769c4dde77268f8b0694fc7cdfef6f0d",
+    "detailed_legacy_before_sha256": "90e93e969ce2cb1573a37c69856c3de6cf865c1c7c1bd1eb769dcf5dc118c521",
+    "detailed_legacy_after_sha256": "90e93e969ce2cb1573a37c69856c3de6cf865c1c7c1bd1eb769dcf5dc118c521"
+  },
+  "archived_diagnostics": "results/diagnostics/unseeded_noise_aborted_20260719 (not part of this submission package)"
+}
